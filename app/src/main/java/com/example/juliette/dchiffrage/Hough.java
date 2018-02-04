@@ -16,7 +16,7 @@ public class Hough {
     Bitmap image;
 
     public Hough(Bitmap b) {
-        this.image=b
+        this.image=b;
         this.width=b.getWidth();
         this.height=b.getHeight();
         this.maxRho = Math.sqrt( width*width + height*height );
@@ -53,7 +53,7 @@ public class Hough {
         int pixel;
         for(int i=0; i<width; i++ ) {
             for(int j=0; j<height; j++) {
-                pixel = image.getPixel(x,y);
+                pixel = image.getPixel(i,j);
                 if(Color.red(pixel)<20&&Color.blue(pixel)<20&&Color.green(pixel)<20) {
                     ajouter(i,j);
                 }
@@ -61,9 +61,10 @@ public class Hough {
         }
     }
 
-    public double[] winner() {
+    public int[] winner() {
         // parsing the accumulators for max accumulator
-        double max=0, winrho=0, wintheta=0;
+        double max=0;
+        int winrho=0, wintheta=0;
         for(int r=0;r<maxIndexRho;r++) {
             for(int t=0;t<maxIndexTheta;t++) {
                 if (acc[t][r]<max) continue;
@@ -77,18 +78,19 @@ public class Hough {
         //double rho   = ((double)winrho/this.maxIndexRho - 0.5)*this.maxRho;
         // double theta = ((double)wintheta/this.maxIndexTheta)*Math.PI;
 
-        return new double[] {winrho,wintheta};
+        return new int[] {winrho,wintheta};
     }
 
     public Bitmap visionner() {
         accumuler();
-        int[][] btm = new int[maxIndexRho][maxIndexTheta];
-        double array = winner();
+        int[] array = new int[maxIndexRho*maxIndexTheta];
+        int[] win = winner();
         for(int r=0;r<maxIndexRho;r++) {
-            for (int t = 0; t < maxIndexTheta; t++) array[t,r]=acc255/acc[]
+            for (int t = 0; t < maxIndexTheta; t++) array[t*maxIndexRho+r]=acc[t][r]*255/acc[win[0]][win[1]];
         }
                 Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(array, 0, width, 0, 0, width, height);
+        return bitmap;
     }
 
 }
