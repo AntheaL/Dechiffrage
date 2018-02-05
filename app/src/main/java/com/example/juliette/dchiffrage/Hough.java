@@ -3,6 +3,9 @@ package com.example.juliette.dchiffrage;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
+
+import java.util.ArrayList;
 
 public class Hough {
 
@@ -93,4 +96,25 @@ public class Hough {
         return bitmap;
     }
 
+    public static Bitmap RotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+  //  public Bitmap filter() {}
+        // filtre acc pour ne garder que les barres de mesure et de portée
+
+
+  //  public double getHeight() {
+  //      Bitmap btm = filter();
+        // renvoie la hauteur (index) d'une mesure
+  //
+  //  }
+
+  //  public ArrayList<int[]> cut() {
+  //      ArrayList<int[]> L = new ArrayList<>();
+  //          // renvoie la liste des mesures données par les 2 limites horizontales
+  //          // (hauteur d'image égale à  3*getHeight())
+  //  }
 }

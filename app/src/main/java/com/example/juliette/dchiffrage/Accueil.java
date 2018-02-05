@@ -58,40 +58,31 @@ public class Accueil extends AppCompatActivity {
         tl = findViewById(R.id.tableLayoutList);
         gson = new Gson();
 
-        if(prefs.contains("ListPartitions")) {
+        if (prefs.contains("ListPartitions")) {
             json = prefs.getString("ListPartitions", "");
             partitions = gson.fromJson(json, type);
-            for (Partition p : partitions) {
-                addRow(p);
-            }
+            for (Partition p : partitions) addRow(p);
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Intent intent = getIntent();
-        if (intent != null) {
-            String s = intent.getStringExtra(EXTRA_COMPONENT_NAME);
-            ArrayList<Bitmap> L =  new ArrayList<>();
-            Partition p = new Partition(s,L);
-            addSco(p);
-            //Toast toast = Toast.makeText(getApplicationContext(), "it works", Toast.LENGTH_LONG);
-            // toast.show();
-        }
-        FloatingActionButton fab = findViewById(R.id.fab);
+        // Intent intent = getIntent();
+        //if (intent != null) {
+        //    String s = intent.getStringExtra(EXTRA_COMPONENT_NAME);
+        //    ArrayList<Bitmap> L =  new ArrayList<>();
+        //    Partition p = new Partition(s,L);
+        //    addSco(p);
+        //Toast toast = Toast.makeText(getApplicationContext(), "it works", Toast.LENGTH_LONG);
+        // toast.show();
+        // }
+        FloatingActionButton fab = findViewById(R.id.home_fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                startActivity(new Intent(Accueil.this, AddScore.class));
+                Intent intent = new Intent(Accueil.this, AddScore.class);
+                startActivity(intent);
             }
         });
-
-    }
-
-    public void addSco(Partition p) {
-        addRow(p);
-        partitions.add(p);
-        json = gson.toJson(partitions);
-        prefsEditor.putString("ListPartitions",json);
-        prefsEditor.commit();
     }
 
     public void addRow(final Partition p) {
@@ -136,8 +127,6 @@ public class Accueil extends AppCompatActivity {
         row.addView(remove);
         tl.addView(row);//, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
-
-
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

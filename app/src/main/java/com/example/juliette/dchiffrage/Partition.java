@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 public class Partition {
     String nom;
-    private ArrayList<Bitmap> mesures;
-    public Partition(String m, ArrayList<Bitmap> L) {
+    private ArrayList<Page> pages;
+    public Partition(String m, ArrayList<Page> L) {
         nom = m;
-        mesures = L ;
+        pages = L ;
     }
 }
