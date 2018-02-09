@@ -78,7 +78,7 @@ public class Hough {
         }
 
         // indexes -> (rho,theta)
-        //double rho   = ((double)winrho/this.maxIndexRho - 0.5)*this.maxRho;
+        // double rho   = ((double)winrho/this.maxIndexRho - 0.5)*this.maxRho;
         // double theta = ((double)wintheta/this.maxIndexTheta)*Math.PI;
 
         return new int[] {winrho,wintheta};
@@ -96,10 +96,11 @@ public class Hough {
         return bitmap;
     }
 
-    public static Bitmap RotateBitmap(Bitmap source, float angle) {
+    public void RotateBitmap() {
+        double angle = winner()[1]/maxIndexTheta*Math.PI;
         Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        matrix.postRotate((float) angle);
+        image =  Bitmap.createBitmap(image, 0, 0, width, height, matrix, true);
     }
 
   //  public Bitmap filter() {}

@@ -46,7 +46,9 @@ public class AddScore extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         prefsEditor = prefs.edit();
+        gson =  new Gson();
         partitions = new ArrayList<>();
+
         if(prefs.contains("ListPartitions")) {
             json = prefs.getString("ListPartitions", "");
             partitions = gson.fromJson(json, type);
@@ -94,11 +96,11 @@ public class AddScore extends AppCompatActivity {
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
 
-                //ImageView linesView = new ImageView(this);
-                //Hough hough = new Hough(btm);
-                //Bitmap lines = hough.visionner();
-                //linesView.setImageBitmap(lines);
-                //layout.addView(linesView);
+                ImageView linesView = new ImageView(this);
+                Hough hough = new Hough(btm);
+                Bitmap lines = hough.visionner();
+                linesView.setImageBitmap(lines);
+                layout.addView(linesView);
 
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
