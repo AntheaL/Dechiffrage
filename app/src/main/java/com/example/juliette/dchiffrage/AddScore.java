@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class AddScore extends AppCompatActivity {
     LinearLayout layout;
@@ -39,6 +40,7 @@ public class AddScore extends AppCompatActivity {
     String json;
     Gson gson;
     ArrayList<Partition> partitions;
+    ArrayList<Bitmap> photos;
     Type type = new TypeToken<List<Partition>>(){}.getType();
 
     @Override
@@ -48,6 +50,7 @@ public class AddScore extends AppCompatActivity {
         prefsEditor = prefs.edit();
         gson =  new Gson();
         partitions = new ArrayList<>();
+        photos = new ArrayList<>();
 
         if(prefs.contains("ListPartitions")) {
             json = prefs.getString("ListPartitions", "");
@@ -60,6 +63,9 @@ public class AddScore extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ArrayList<Page> L = new ArrayList();
+                for(Bitmap bitmap:photos) {
+                    L.add(new Page(bitmap,new ArrayList<int[]>()));
+                }
                 Partition p = new Partition(name.getText().toString(), L);
                 partitions.add(p);
                 json = gson.toJson(partitions);
@@ -92,15 +98,17 @@ public class AddScore extends AppCompatActivity {
             try {
                 Uri targetUri = data.getData();
                 ImageView imageView = new ImageView(this);
+                imageView.setAdjustViewBounds(true);
                 Bitmap btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
+                photos.add(btm);
 
-                ImageView linesView = new ImageView(this);
-                Hough hough = new Hough(btm);
-                Bitmap lines = hough.visionner();
-                linesView.setImageBitmap(lines);
-                layout.addView(linesView);
+                //ImageView linesView = new ImageView(this);
+                //Hough hough = new Hough(btm);
+                //Bitmap lines = hough.visionner();
+                //linesView.setImageBitmap(lines);
+                //layout.addView(linesView);
 
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block

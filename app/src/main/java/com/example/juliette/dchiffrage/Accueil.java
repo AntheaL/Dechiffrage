@@ -90,8 +90,16 @@ public class Accueil extends AppCompatActivity {
         row.setLayoutParams(new TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT));
-        TextView tv = new EditText(this);
-        tv.setText(p.nom);
+        Button btn = new Button(this);
+        btn.setText(p.nom);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Accueil.this, Jeu.class);
+                intent.putExtra("patition",gson.toJson(p));
+                startActivity(intent);
+            }
+        });
 
         ImageButton remove = new ImageButton(this);
         remove.setImageResource(R.drawable.ic_delete);
@@ -123,7 +131,7 @@ public class Accueil extends AppCompatActivity {
 
             }
         });
-        row.addView(tv);
+        row.addView(btn);
         row.addView(remove);
         tl.addView(row);//, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
