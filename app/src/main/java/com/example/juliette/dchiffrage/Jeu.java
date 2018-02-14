@@ -1,5 +1,7 @@
 package com.example.juliette.dchiffrage;
 
+import android.content.Intent;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,17 +12,29 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
+
 public class Jeu extends AppCompatActivity {
     int speed = 50;
     int measure = 0;
     ImageButton play,less, more, go;
     TextView tempo;
     EditText mesure;
-    MyAdapter pageAdepter;
+    ViewPager mViewPager;
+    Partition p;
+    Gson gson;
+    Type type = new TypeToken<List<Partition>>(){}.getType();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        gson = new Gson();
+        p = gson.fromJson(intent.getStringExtra(Intent.EXTRA_TEXT), type);
         setContentView(R.layout.activity_jeu);
         Toolbar toolbar = findViewById(R.id.toolbar_jeu);
         setSupportActionBar(toolbar);
@@ -48,11 +62,7 @@ public class Jeu extends AppCompatActivity {
                 measure = Integer.parseInt(mesure.getText().toString());
             }
         });
+        mViewPager = findViewById(R.id.pager);
+        mViewPager.setAdapter(new MyAdapter(this,p));
     }
-
-    mCustomPagerAdapter = new MyAdapter(this);
-
-    mViewPager = (ViewPager) findViewById(R.id.pager);
-mViewPager.setAdapter(mCustomPagerAdapter);
-
 }

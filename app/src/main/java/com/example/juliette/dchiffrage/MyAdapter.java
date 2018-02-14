@@ -3,21 +3,23 @@ package com.example.juliette.dchiffrage;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.constraint.solver.widgets.Rectangle;
+import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-class MyAdapter {
+import com.google.gson.Gson;
 
+class MyAdapter extends PagerAdapter {
     Context mContext;
     LayoutInflater mLayoutInflater;
     Partition p;
 
     public MyAdapter(Context context, Partition p) {
         mContext = context;
-        p.this = p;
+        this.p = p;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -31,7 +33,6 @@ class MyAdapter {
         return view == ((LinearLayout) object);
     }
 
-    @Override
     public Object instantiateItem(ViewGroup container, int pos_page, int position) {
         Page page = p.pages.get(pos_page);
         Rectangle rect = page.mesures.get(position);

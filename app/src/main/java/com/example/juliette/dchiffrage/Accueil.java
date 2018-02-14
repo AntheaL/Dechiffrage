@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Intent.EXTRA_COMPONENT_NAME;
+import static android.content.Intent.EXTRA_TEXT;
 
 public class Accueil extends AppCompatActivity {
 
@@ -96,7 +97,7 @@ public class Accueil extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Accueil.this, Jeu.class);
-                intent.putExtra("patition",gson.toJson(p));
+                intent.putExtra(EXTRA_TEXT,gson.toJson(p));
                 startActivity(intent);
             }
         });

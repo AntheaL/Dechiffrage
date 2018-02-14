@@ -9,7 +9,7 @@ public class Page {
     Bitmap btm;
     ArrayList<Rectangle> mesures;
 
-    public Page(Bitmap btm, Rectangle mesures) {
+    public Page(Bitmap btm, ArrayList<Rectangle> mesures) {
         this.btm = btm;
         this.mesures=mesures;
     }

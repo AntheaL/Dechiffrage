@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -64,7 +65,7 @@ public class AddScore extends AppCompatActivity {
             public void onClick(View v) {
                 ArrayList<Page> L = new ArrayList();
                 for(Bitmap bitmap:photos) {
-                    L.add(new Page(bitmap,new ArrayList<int[]>()));
+                    L.add(new Page(bitmap,new ArrayList<Rectangle>()));
                 }
                 Partition p = new Partition(name.getText().toString(), L);
                 partitions.add(p);
