@@ -96,9 +96,9 @@ public class Accueil extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Accueil.this, Jeu.class);
-                intent.putExtra(EXTRA_TEXT,gson.toJson(p));
-                startActivity(intent);
+                Intent intent_2 = new Intent(Accueil.this, Jeu.class);
+                intent_2.putExtra(EXTRA_TEXT,gson.toJson(p));
+                startActivity(intent_2);
             }
         });
 

@@ -32,9 +32,9 @@ public class Jeu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
+        Intent intent_2 = getIntent();
         gson = new Gson();
-        p = gson.fromJson(intent.getStringExtra(Intent.EXTRA_TEXT), type);
+        p = gson.fromJson(intent_2.getStringExtra(Intent.EXTRA_TEXT), type);
         setContentView(R.layout.activity_jeu);
         Toolbar toolbar = findViewById(R.id.toolbar_jeu);
         setSupportActionBar(toolbar);

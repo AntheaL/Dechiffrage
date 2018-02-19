@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -34,7 +35,7 @@ import java.util.Set;
 
 public class AddScore extends AppCompatActivity {
     LinearLayout layout;
-    Button save;
+    ImageButton save;
     EditText name;
     SharedPreferences prefs;
     SharedPreferences.Editor prefsEditor;
@@ -58,7 +59,7 @@ public class AddScore extends AppCompatActivity {
             partitions = gson.fromJson(json, type);
         }
         setContentView(R.layout.activity_add_partition);
-        layout = (LinearLayout) findViewById(R.id.chosen);
+        layout = findViewById(R.id.chosen);
         save = findViewById(R.id.ok);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
