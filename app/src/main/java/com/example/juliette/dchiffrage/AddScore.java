@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.LinearLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class AddScore extends AppCompatActivity {
     Gson gson;
     ArrayList<Partition> partitions;
     ArrayList<Bitmap> photos;
+    ArrayList<Page> L;
     Type type = new TypeToken<List<Partition>>(){}.getType();
 
     @Override
@@ -53,6 +56,7 @@ public class AddScore extends AppCompatActivity {
         gson =  new Gson();
         partitions = new ArrayList<>();
         photos = new ArrayList<>();
+        L = new ArrayList<>();
 
         if(prefs.contains("ListPartitions")) {
             json = prefs.getString("ListPartitions", "");
@@ -64,10 +68,6 @@ public class AddScore extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Page> L = new ArrayList();
-                for(Bitmap bitmap:photos) {
-                    L.add(new Page(bitmap,new ArrayList<Rectangle>()));
-                }
                 Partition p = new Partition(name.getText().toString(), L);
                 partitions.add(p);
                 json = gson.toJson(partitions);
@@ -99,6 +99,7 @@ public class AddScore extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             try {
                 Uri targetUri = data.getData();
+                L.add(new Page(targetUri.getPath(),new ArrayList<Rectangle>()));
                 ImageView imageView = new ImageView(this);
                 imageView.setAdjustViewBounds(true);
                 Bitmap btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
@@ -125,6 +126,4 @@ public class AddScore extends AppCompatActivity {
         prefsEditor.putString("ListPartitions",json);
         prefsEditor.commit();
     }
-
-
 }

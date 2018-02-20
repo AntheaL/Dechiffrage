@@ -2,6 +2,7 @@ package com.example.juliette.dchiffrage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
@@ -35,10 +36,11 @@ class MyAdapter extends PagerAdapter {
 
     public Object instantiateItem(ViewGroup container, int pos_page, int position) {
         Page page = p.pages.get(pos_page);
+        Bitmap btm = BitmapFactory.decodeFile(page.path);
         Rectangle rect = page.mesures.get(position);
         View itemView = mLayoutInflater.inflate(R.layout.layout, container, false);
         ImageView imageView = itemView.findViewById(R.id.image_mesure);
-        imageView.setImageBitmap(Bitmap.createBitmap(page.btm,rect.x, rect.y,rect.width,rect.height));
+        imageView.setImageBitmap(Bitmap.createBitmap(btm,rect.x, rect.y,rect.width,rect.height));
         container.addView(itemView);
         return itemView;
     }
