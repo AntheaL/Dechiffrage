@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.util.List;
 
 public class Jeu extends AppCompatActivity {
@@ -27,11 +28,15 @@ public class Jeu extends AppCompatActivity {
     ViewPager mViewPager;
     Partition p;
     Gson gson;
+    MyAdapter adapter;
     Type type = new TypeToken<List<Partition>>(){}.getType();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        adapter = new MyAdapter(this, p);
+        mViewPager = findViewById(R.id.pager);
+        mViewPager.setAdapter(adapter);
         Intent intent_2 = getIntent();
         gson = new Gson();
         p = gson.fromJson(intent_2.getStringExtra(Intent.EXTRA_TEXT), type);
@@ -59,10 +64,27 @@ public class Jeu extends AppCompatActivity {
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                measure = Integer.parseInt(mesure.getText().toString());
+                try {
+                    measure = Integer.parseInt(mesure.getText().toString());
+                    int[] pos = positions(measure);
+                    adapter.instantiateItem(mViewPager,pos[0],pos[1]);
+                }
+                catch(NumberFormatException e) {
+                }
             }
         });
-        mViewPager = findViewById(R.id.pager);
-        mViewPager.setAdapter(new MyAdapter(this,p));
+   }
+
+    public int[] positions(int measure) { // the page and measure returned start from 0
+        int n = 1;
+        int p = -1;
+        do {
+            for (Page page : p) {
+                n += page.mesures.size();
+                p++;
+            }
+        }
+        while(n<measure);
+        return new int[] {p,measure-n};
     }
 }
