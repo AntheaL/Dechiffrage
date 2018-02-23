@@ -48,6 +48,7 @@ public class Accueil extends AppCompatActivity {
     SharedPreferences.Editor prefsEditor;
     List<Partition> partitions;
     String json;
+    ArrayList<Bitmap> L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +98,7 @@ public class Accueil extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent_2 = new Intent(Accueil.this, Jeu.class);
-                intent_2.putExtra(EXTRA_TEXT,gson.toJson(p));
+                intent_2.putExtra("Partition", p);
                 startActivity(intent_2);
             }
         });

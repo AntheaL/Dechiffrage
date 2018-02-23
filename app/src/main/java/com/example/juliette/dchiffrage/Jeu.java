@@ -1,6 +1,7 @@
 package com.example.juliette.dchiffrage;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,21 +26,23 @@ public class Jeu extends AppCompatActivity {
     ImageButton play,less, more, go;
     TextView tempo;
     EditText mesure;
-    ViewPager mViewPager;
     Partition p;
     Gson gson;
-    MyAdapter adapter;
     Type type = new TypeToken<List<Partition>>(){}.getType();
+    String json;
+    FragmentTransaction ft;
+    Swipe swipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new MyAdapter(this, p);
-        mViewPager = findViewById(R.id.pager);
-        mViewPager.setAdapter(adapter);
+        ft  = getSupportFragmentManager().beginTransaction();
+        swipe = new Swipe();
+        ft.add(R.id.placeholder, swipe);
+        ft.commit();
         Intent intent_2 = getIntent();
         gson = new Gson();
-        p = gson.fromJson(intent_2.getStringExtra(Intent.EXTRA_TEXT), type);
+        json = intent_2.getStringExtra(Intent.EXTRA_TEXT);
         setContentView(R.layout.activity_jeu);
         Toolbar toolbar = findViewById(R.id.toolbar_jeu);
         setSupportActionBar(toolbar);
@@ -65,26 +68,14 @@ public class Jeu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    ft.replace(R.id.placeholder, new Swipe());
+                    ft.commit();
                     measure = Integer.parseInt(mesure.getText().toString());
-                    int[] pos = positions(measure);
-                    adapter.instantiateItem(mViewPager,pos[0],pos[1]);
+                    swipe.adapter.instantiateItem(swipe.mViewPager,measure-1);
                 }
                 catch(NumberFormatException e) {
                 }
             }
         });
    }
-
-    public int[] positions(int measure) { // the page and measure returned start from 0
-        int n = 1;
-        int p = -1;
-        do {
-            for (Page page : p) {
-                n += page.mesures.size();
-                p++;
-            }
-        }
-        while(n<measure);
-        return new int[] {p,measure-n};
-    }
 }

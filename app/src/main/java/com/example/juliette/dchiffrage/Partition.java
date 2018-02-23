@@ -6,9 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.constraint.solver.widgets.Rectangle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Partition {
+public class Partition implements Serializable {
     String nom;
     ArrayList<Page> pages;
     public Partition(String m, ArrayList<Page> L) {
@@ -33,19 +34,26 @@ public class Partition {
         return new int[] {l, max_height}
     }
 
-    public Bitmap combine() {
-        int[] t = sizes();
-        Bitmap result = Bitmap.createBitmap(t[0],t[1],Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        Paint paint = new Paint();
+    public ArrayList<Bitmap> combine() {
+        ArrayList<Bitmap> L = new ArrayList<>();
         Bitmap btm;
-        int position = 0;
         for (Page page:pages) {
             btm = BitmapFactory.decodeFile(page.path);
             for(Rectangle rect: page.mesures) {
-                canvas.drawBitmap(Bitmap.createBitmap(btm,rect.x, rect.y,rect.width,rect.height),position, 0, paint);
+                L.add(Bitmap.createBitmap(btm,rect.x, rect.y,rect.width,rect.height),position, 0, paint);
             }
-        return result;
+        return L;
         }
+    }
+
+    public Bitmap getResult() {
+        int[] t = sizes();
+        int position = 0;
+        Bitmap result = Bitmap.createBitmap(t[0],t[1],Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+        Paint paint = new Paint();
+        ArrayList<Bitmap> L = combine();
+        for(Bitmap btm : L) canvas.drawBitmap(btm,position, 0, paint);
+        return result;
     }
 }

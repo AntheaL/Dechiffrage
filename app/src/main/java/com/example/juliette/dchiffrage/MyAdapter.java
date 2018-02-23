@@ -13,14 +13,18 @@ import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
 class MyAdapter extends PagerAdapter {
     Context mContext;
     LayoutInflater mLayoutInflater;
     Partition p;
+    ArrayList<Bitmap> L;
 
     public MyAdapter(Context context, Partition p) {
         mContext = context;
         this.p = p;
+        L = p.combine();
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -34,13 +38,10 @@ class MyAdapter extends PagerAdapter {
         return view == ((LinearLayout) object);
     }
 
-    public Object instantiateItem(ViewGroup container, int pos_page, int position) {
-        Page page = p.pages.get(pos_page);
-        Bitmap btm = BitmapFactory.decodeFile(page.path);
-        Rectangle rect = page.mesures.get(position);
+    public Object instantiateItem(ViewGroup container, int pos) {
         View itemView = mLayoutInflater.inflate(R.layout.layout, container, false);
         ImageView imageView = itemView.findViewById(R.id.image_mesure);
-        imageView.setImageBitmap(Bitmap.createBitmap(btm,rect.x, rect.y,rect.width,rect.height));
+        imageView.setImageBitmap(L.get(pos));
         container.addView(itemView);
         return itemView;
     }
