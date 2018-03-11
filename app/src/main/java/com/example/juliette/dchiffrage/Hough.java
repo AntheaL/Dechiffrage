@@ -26,6 +26,9 @@ public class Hough {
         this.maxIndexTheta=360; // precision : 1 degree by cell
         this.maxIndexRho=(int)(1+this.maxRho); // precision : 1 pixel by cell
         this.acc = new int[maxIndexTheta][maxIndexRho];
+        for(int i = 0; i<maxIndexTheta; i++) {
+            for(int j=0;j<maxIndexRho;j++) acc[i][j] = 0;
+        }
     }
 
     public void ajouter(int x,int y) {
@@ -54,7 +57,7 @@ public class Hough {
 
     public void accumuler() {
         int pixel;
-        for(int i=0; i<width; i++ ) {
+        for(int i=0; i<width; i++) {
             for(int j=0; j<height; j++) {
                 pixel = image.getPixel(i,j);
                 if(Color.red(pixel)<20&&Color.blue(pixel)<20&&Color.green(pixel)<20) {
@@ -89,7 +92,7 @@ public class Hough {
         int[] array = new int[maxIndexRho*maxIndexTheta];
         int[] win = winner();
         for(int r=0;r<maxIndexRho;r++) {
-            for (int t = 0; t < maxIndexTheta; t++) array[t*maxIndexRho+r]=acc[t][r]*255/acc[win[0]][win[1]];
+            for (int t = 0; t < maxIndexTheta; t++) array[t*maxIndexRho+r]=acc[t][r]*255/acc[win[1]][win[0]];
         }
                 Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(array, 0, width, 0, 0, width, height);
@@ -103,7 +106,8 @@ public class Hough {
         image =  Bitmap.createBitmap(image, 0, 0, width, height, matrix, true);
     }
 
-  //  public Bitmap filter() {}
+
+        //  public Bitmap filter() {}
         // filtre acc pour ne garder que les barres de mesure et de portée
 
 
@@ -112,6 +116,7 @@ public class Hough {
         // renvoie la hauteur (index) d'une mesure
   //
   //  }
+
 
   //  public ArrayList<int[]> cut() {
   //      ArrayList<int[]> L = new ArrayList<>();

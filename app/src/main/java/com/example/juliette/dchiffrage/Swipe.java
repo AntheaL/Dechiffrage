@@ -1,7 +1,5 @@
 package com.example.juliette.dchiffrage;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -54,13 +52,10 @@ public class Swipe extends Fragment implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         switch(event.getAction())
         {
-            case MotionEvent.ACTION_LEFT:
-
-                break;
-            case MotionEvent.ACTION_RIGHT:
+            case MotionEvent.ACTION_SCROLL:
 
                 break;
         }
-        return super.onTouchEvent(event);
+        return false;
     }
 }

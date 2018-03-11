@@ -31,19 +31,18 @@ public class Partition implements Serializable {
                 max_height = Math.max(max_height, rect.height);
             }
         }
-        return new int[] {l, max_height}
+        return new int[] {l, max_height};
     }
 
     public ArrayList<Bitmap> combine() {
         ArrayList<Bitmap> L = new ArrayList<>();
         Bitmap btm;
-        for (Page page:pages) {
+        for (Page page : pages) {
             btm = BitmapFactory.decodeFile(page.path);
-            for(Rectangle rect: page.mesures) {
-                L.add(Bitmap.createBitmap(btm,rect.x, rect.y,rect.width,rect.height),position, 0, paint);
-            }
-        return L;
+            for (Rectangle rect : page.mesures)
+                L.add(Bitmap.createBitmap(btm, rect.x, rect.y, rect.width, rect.height));
         }
+        return L;
     }
 
     public Bitmap getResult() {

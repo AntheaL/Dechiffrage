@@ -1,6 +1,5 @@
 package com.example.juliette.dchiffrage;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,14 +10,9 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.constraint.solver.widgets.Rectangle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,13 +21,21 @@ import android.widget.LinearLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.ByteArrayOutputStream;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+
+import static org.opencv.imgproc.Imgproc.COLOR_GRAY2BGR;
+import static org.opencv.imgproc.Imgproc.Canny;
+import static org.opencv.imgproc.Imgproc.HoughLines;
+import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class AddScore extends AppCompatActivity {
     LinearLayout layout;
@@ -106,12 +108,11 @@ public class AddScore extends AppCompatActivity {
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
+                Bitmap result  = detect(btm);
 
-                //ImageView linesView = new ImageView(this);
-                //Hough hough = new Hough(btm);
-                //Bitmap lines = hough.visionner();
-                //linesView.setImageBitmap(lines);
-                //layout.addView(linesView);
+                ImageView linesView = new ImageView(this);
+                linesView.setImageBitmap(result);
+                layout.addView(linesView);
 
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
@@ -125,5 +126,35 @@ public class AddScore extends AppCompatActivity {
         json = gson.toJson(partitions);
         prefsEditor.putString("ListPartitions",json);
         prefsEditor.commit();
+    }
+
+    public static Bitmap detect(Bitmap bitmap) {
+        Mat src = new Mat();
+        Utils.bitmapToMat(bitmap,src);
+        Mat dst = new Mat();
+        Mat cdst = new Mat();
+        Canny(src, dst, 50, 200, 3);
+        cvtColor(dst, cdst, COLOR_GRAY2BGR);
+        Mat lines = new Mat();
+        HoughLines(dst, lines, 1, Math.PI/180, 100, 0, 0);
+
+        for(int i = 0; i < lines.cols(); i++ )
+        {
+            double data[] = lines.get(0,i);
+            double rho = data[0];
+            double theta = data[1];
+            Point pt1 = new Point();
+            Point pt2 = new Point();
+            double a = Math.cos(theta), b = Math.sin(theta);
+            double x0 = a*rho, y0 = b*rho;
+            pt1.x = Math.round(x0 + 1000*(-b));
+            pt1.y = Math.round(y0 + 1000*(a));
+            pt2.x = Math.round(x0 - 1000*(-b));
+            pt2.y = Math.round(y0 - 1000*(a));
+            Imgproc.line( cdst, pt1, pt2, new Scalar(0,0,255), 3);
+        }
+        Bitmap result = Bitmap.createBitmap(lines.cols(), lines.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(cdst, result);
+        return result;
     }
 }

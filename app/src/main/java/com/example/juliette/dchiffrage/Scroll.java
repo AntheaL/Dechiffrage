@@ -5,6 +5,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -14,6 +18,7 @@ import java.util.List;
 
 public class Scroll extends Fragment {
     private static String PARTITION;
+    TranslateAnimation _translateAnimation;
     Partition p;
     Gson gson;
     Type type = new TypeToken<List<Partition>>() {
@@ -37,6 +42,14 @@ public class Scroll extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         p = gson.fromJson(PARTITION, type);
         gson = new Gson();
+        _translateAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, -300f, TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, 0f);
+        _translateAnimation.setDuration(8000);
+        _translateAnimation.setRepeatCount(-1);
+        _translateAnimation.setRepeatMode(Animation.RESTART);
+        _translateAnimation.setInterpolator(new LinearInterpolator());
+        ImageView img = view.findViewById(R.id.img);
+        img.setImageBitmap(p.getResult());
+        img.startAnimation(_translateAnimation);
     }
 
 }
