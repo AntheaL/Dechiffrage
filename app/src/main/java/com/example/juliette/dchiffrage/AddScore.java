@@ -21,7 +21,10 @@ import android.widget.LinearLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -32,7 +35,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
 import static org.opencv.imgproc.Imgproc.COLOR_GRAY2BGR;
+import static org.opencv.imgproc.Imgproc.CV_HOUGH_PROBABILISTIC;
 import static org.opencv.imgproc.Imgproc.Canny;
 import static org.opencv.imgproc.Imgproc.HoughLines;
 import static org.opencv.imgproc.Imgproc.cvtColor;
@@ -129,32 +134,35 @@ public class AddScore extends AppCompatActivity {
     }
 
     public static Bitmap detect(Bitmap bitmap) {
+        OpenCVLoader.initDebug();
         Mat src = new Mat();
         Utils.bitmapToMat(bitmap,src);
         Mat dst = new Mat();
         Mat cdst = new Mat();
-        Canny(src, dst, 50, 200, 3);
-        cvtColor(dst, cdst, COLOR_GRAY2BGR);
+        Mat bwsrc = new Mat();
+        cvtColor(src, bwsrc, COLOR_BGR2GRAY);
+        Canny(bwsrc, dst, 50, 200, 3);
+        cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
         Mat lines = new Mat();
-        HoughLines(dst, lines, 1, Math.PI/180, 100, 0, 0);
+        Imgproc.HoughLinesP(dst, lines, 1, Math.PI/180, 100, 100, 20);
 
-        for(int i = 0; i < lines.cols(); i++ )
+        for (int x = 0; x < lines.rows(); x++)
         {
-            double data[] = lines.get(0,i);
-            double rho = data[0];
-            double theta = data[1];
-            Point pt1 = new Point();
-            Point pt2 = new Point();
-            double a = Math.cos(theta), b = Math.sin(theta);
-            double x0 = a*rho, y0 = b*rho;
-            pt1.x = Math.round(x0 + 1000*(-b));
-            pt1.y = Math.round(y0 + 1000*(a));
-            pt2.x = Math.round(x0 - 1000*(-b));
-            pt2.y = Math.round(y0 - 1000*(a));
-            Imgproc.line( cdst, pt1, pt2, new Scalar(0,0,255), 3);
+            double[] vec = lines.get(x,0);
+            double x1 = vec[0],
+                    y1 = vec[1],
+                    x2 = vec[2],
+                    y2 = vec[3];
+            Point start = new Point(x1, y1);
+            Point end = new Point(x2, y2);
+
+            Imgproc.line(cdst, start, end, new Scalar(255,0,0), 5);
+
         }
-        Bitmap result = Bitmap.createBitmap(lines.cols(), lines.rows(), Bitmap.Config.ARGB_8888);
+
+        Bitmap result = Bitmap.createBitmap(cdst.cols(), cdst.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(cdst, result);
+
         return result;
     }
 }
