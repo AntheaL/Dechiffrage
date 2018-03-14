@@ -49,6 +49,7 @@ public class AddScore extends AppCompatActivity {
     ArrayList<Bitmap> photos;
     ArrayList<Page> L;
     Type type = new TypeToken<List<Partition>>(){}.getType();
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +93,27 @@ public class AddScore extends AppCompatActivity {
                 startActivityForResult(intent, 0);
             }
         });
+
+        FloatingActionButton fab_camera = findViewById(R.id.fab_camera);
+        fab_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+            }
+        });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap rslt = (Bitmap) extras.get("data");
+        }
         if (resultCode == RESULT_OK) {
             try {
                 Uri targetUri = data.getData();

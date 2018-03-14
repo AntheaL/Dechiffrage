@@ -34,8 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center_horizontal"
-        android:textSize="25dp"
-        android:hint="Nom"/>
+        android:hint="Nom"
+        android:textSize="25dp" />
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView2"
