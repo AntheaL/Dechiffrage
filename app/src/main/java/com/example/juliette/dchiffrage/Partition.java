@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.constraint.solver.widgets.Rectangle;
+import android.graphics.Rect;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,9 +26,9 @@ public class Partition implements Serializable {
         int l = 0;
         int max_height = 0;
         for(Page page: pages) {
-            for (Rectangle rect : page.mesures) {
-                l += rect.width;
-                max_height = Math.max(max_height, rect.height);
+            for (Rect rect : page.mesures) {
+                l += rect.right-rect.left;
+                max_height = Math.max(max_height, rect.top-rect.bottom);
             }
         }
         return new int[] {l, max_height};
@@ -39,8 +39,8 @@ public class Partition implements Serializable {
         Bitmap btm;
         for (Page page : pages) {
             btm = BitmapFactory.decodeFile(page.path);
-            for (Rectangle rect : page.mesures)
-                L.add(Bitmap.createBitmap(btm, rect.x, rect.y, rect.width, rect.height));
+            for (Rect rect : page.mesures)
+                L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.left-rect.right,rect.top- rect.bottom));
         }
         return L;
     }

@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.constraint.solver.widgets.Rectangle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,8 +23,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -35,11 +33,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.sort;
 import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
-import static org.opencv.imgproc.Imgproc.COLOR_GRAY2BGR;
-import static org.opencv.imgproc.Imgproc.CV_HOUGH_PROBABILISTIC;
 import static org.opencv.imgproc.Imgproc.Canny;
-import static org.opencv.imgproc.Imgproc.HoughLines;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class AddScore extends AppCompatActivity {
@@ -55,6 +51,8 @@ public class AddScore extends AppCompatActivity {
     ArrayList<Page> L;
     Type type = new TypeToken<List<Partition>>(){}.getType();
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    double portee; // hauteur d'une portée
+    double blanc; // distance entre deux portées
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,18 +120,26 @@ public class AddScore extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             try {
                 Uri targetUri = data.getData();
-                L.add(new Page(targetUri.getPath(),new ArrayList<Rectangle>()));
                 ImageView imageView = new ImageView(this);
                 imageView.setAdjustViewBounds(true);
                 Bitmap btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
-                Bitmap result  = detect(btm);
+                Mat lines = detect2(btm);
+                ArrayList<Double> P =  search(lines); // cherche les coordonnées verticales des portées
+                portee = P.get(1)-P.get(0);
+                blanc = P.get(2)-P.get(1);
+                ArrayList<Rect> rectangles = new ArrayList<>(); // un Rect = une ligne entière
+                for(int i = 0; i<L.size(); i+=2) {
+                    rectangles.add(new Rect(0, (int)(P.get(i)-blanc/2), btm.getWidth(),(int)(P.get(i)+blanc/2))); // left, top, right, bottom
+                }
+                L.add(new Page(targetUri.getPath(),rectangles));
 
-                ImageView linesView = new ImageView(this);
-                linesView.setImageBitmap(result);
-                layout.addView(linesView);
+                // Bitmap result  = detect(btm);
+                // ImageView linesView = new ImageView(this);
+                //linesView.setImageBitmap(result);
+                // layout.addView(linesView);
 
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
@@ -157,10 +163,10 @@ public class AddScore extends AppCompatActivity {
         Mat cdst = new Mat();
         Mat bwsrc = new Mat();
         cvtColor(src, bwsrc, COLOR_BGR2GRAY);
-        Canny(bwsrc, dst, 50, 200, 3);
+        Canny(bwsrc, dst, 100, 700, 3);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(dst, lines, 1, Math.PI/180, 100, 100, 20);
+        Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 300, 20);
 
         for (int x = 0; x < lines.rows(); x++)
         {
@@ -180,5 +186,41 @@ public class AddScore extends AppCompatActivity {
         Utils.matToBitmap(cdst, result);
 
         return result;
+    }
+
+    public static Mat detect2(Bitmap bitmap) {
+        OpenCVLoader.initDebug();
+        Mat src = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        Mat dst = new Mat();
+        Mat cdst = new Mat();
+        Mat bwsrc = new Mat();
+        cvtColor(src, bwsrc, COLOR_BGR2GRAY);
+        Canny(bwsrc, dst, 100, 700, 3);
+        cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
+        Mat lines = new Mat();
+        Imgproc.HoughLinesP(dst, lines, 5, Math.PI / 180, 200, 300, 20);
+        return lines;
+    }
+
+        public static ArrayList<Double> search(Mat lines) {
+        ArrayList<Double> pos = new ArrayList<>();
+        for(int x=0; x<lines.rows(); x++) {
+            pos.add(lines.get(x,0)[1]);
+        }
+        sort(pos);
+        ArrayList<Double> L = new ArrayList<>();
+        double y = pos.get(0);
+        L.add(y);
+        double z;
+        for(int i = 0; i<pos.size(); i++) {
+            z = pos.get(i);
+            if(Math.abs(z-y)>170) {
+                L.add(pos.get(i-1)); // ajout position verticale de la ligne en bas de portée
+                L.add(z); // ajoute position verticale de la première ligne portée suivante
+                y=z;
+            }
+        }
+        return L;
     }
 }

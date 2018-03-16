@@ -1,7 +1,9 @@
 package com.example.juliette.dchiffrage;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Jeu extends AppCompatActivity {
@@ -33,10 +36,23 @@ public class Jeu extends AppCompatActivity {
     ViewPager mViewPager; // Attributs sensés être dans Swipe
     MyAdapter adapter;
 
+    SharedPreferences prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        p = gson.fromJson(json,type);
+        Intent intent = getIntent();
+
+        ArrayList<Partition> partitions = new ArrayList<>();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        gson = new Gson();
+        json = prefs.getString("ListPartitions", "");
+        partitions = gson.fromJson(json, type);
+        int k = Integer.parseInt(intent.getStringExtra("Partition"));
+        p = partitions.get(k);
+
+        // json = intent.getStringExtra("Partition");
+        // p = gson.fromJson(json,type);
         adapter = new MyAdapter(this, p);
         mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(adapter);
@@ -49,6 +65,12 @@ public class Jeu extends AppCompatActivity {
         setContentView(R.layout.activity_jeu);
         Toolbar toolbar = findViewById(R.id.toolbar_jeu);
         setSupportActionBar(toolbar);
+
+
+        ft.replace(R.id.placeholder, scroll);
+        ft.commit();
+
+
         play = findViewById(R.id.play);
         less = findViewById(R.id.less);
         more = findViewById(R.id.more);

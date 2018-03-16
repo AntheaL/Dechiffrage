@@ -1,43 +1,30 @@
 package com.example.juliette.dchiffrage;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.Intent.EXTRA_COMPONENT_NAME;
-import static android.content.Intent.EXTRA_TEXT;
 
 public class Accueil extends AppCompatActivity {
 
@@ -98,8 +85,8 @@ public class Accueil extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent_2 = new Intent(Accueil.this, Jeu.class);
-                intent_2.putExtra("Partition", p);
-                startActivity(intent_2);
+                intent_2.putExtra("Partition", partitions.indexOf(p));
+                Accueil.this.startActivity(intent_2);
             }
         });
 

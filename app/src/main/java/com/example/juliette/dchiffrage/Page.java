@@ -1,17 +1,14 @@
 package com.example.juliette.dchiffrage;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.constraint.solver.widgets.Rectangle;
+import android.graphics.Rect;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class Page {
     String path;
-    ArrayList<Rectangle> mesures;
+    ArrayList<Rect> mesures;
 
-    public Page(String path, ArrayList<Rectangle> mesures) {
+    public Page(String path, ArrayList<Rect> mesures) {
         this.path = path;
         this.mesures=mesures;
     }

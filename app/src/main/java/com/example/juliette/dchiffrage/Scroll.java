@@ -21,8 +21,8 @@ public class Scroll extends Fragment {
     TranslateAnimation _translateAnimation;
     Partition p;
     Gson gson;
-    Type type = new TypeToken<List<Partition>>() {
-    }.getType();
+    Type type = new TypeToken<List<Partition>>() {}.getType();
+    ImageView img;
 
     public static Scroll newInstance(String json) {
         Scroll fragment = new Scroll();
@@ -42,13 +42,17 @@ public class Scroll extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         p = gson.fromJson(PARTITION, type);
         gson = new Gson();
+        img = view.findViewById(R.id.img);
+        img.setImageBitmap(p.getResult());
+
+    }
+
+    public void startTranslate() {
         _translateAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, -300f, TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, 0f);
         _translateAnimation.setDuration(8000);
         _translateAnimation.setRepeatCount(-1);
         _translateAnimation.setRepeatMode(Animation.RESTART);
         _translateAnimation.setInterpolator(new LinearInterpolator());
-        ImageView img = view.findViewById(R.id.img);
-        img.setImageBitmap(p.getResult());
         img.startAnimation(_translateAnimation);
     }
 
