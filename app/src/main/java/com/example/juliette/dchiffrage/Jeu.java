@@ -41,6 +41,9 @@ public class Jeu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jeu);
+        Toolbar toolbar = findViewById(R.id.toolbar_jeu);
+        setSupportActionBar(toolbar);
         Intent intent = getIntent();
 
         ArrayList<Partition> partitions = new ArrayList<>();
@@ -50,7 +53,7 @@ public class Jeu extends AppCompatActivity {
         partitions = gson.fromJson(json, type);
         int k = Integer.parseInt(intent.getStringExtra("Partition"));
         p = partitions.get(k);
-
+        
         // json = intent.getStringExtra("Partition");
         // p = gson.fromJson(json,type);
         adapter = new MyAdapter(this, p);
@@ -59,14 +62,8 @@ public class Jeu extends AppCompatActivity {
 
         measure = mViewPager.getCurrentItem() +1 ;
         ft  = getSupportFragmentManager().beginTransaction();
-        Intent intent_2 = getIntent();
-        gson = new Gson();
-        json = intent_2.getStringExtra(Intent.EXTRA_TEXT);
-        setContentView(R.layout.activity_jeu);
-        Toolbar toolbar = findViewById(R.id.toolbar_jeu);
-        setSupportActionBar(toolbar);
 
-
+        scroll = Scroll.newInstance(gson.toJson(p));
         ft.replace(R.id.placeholder, scroll);
         ft.commit();
 
@@ -75,8 +72,10 @@ public class Jeu extends AppCompatActivity {
         less = findViewById(R.id.less);
         more = findViewById(R.id.more);
         go = findViewById(R.id.go);
-        tempo.setText(speed);
-        mesure.setHint(measure);
+        tempo = findViewById(R.id.tempo);
+        mesure = findViewById(R.id.mesure);
+        tempo.setText(String.valueOf(speed));
+        mesure.setHint(String.valueOf(measure));
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,11 +95,11 @@ public class Jeu extends AppCompatActivity {
                 speed++;
             }
         });
-        go.setOnClickListener(new View.OnClickListener() {
+        /* go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    ft.replace(R.id.placeholder, new Swipe());
+                    ft.replace(R.id.placeholder, Swipe.newInstance());
                     ft.commit();
                     measure = Integer.parseInt(mesure.getText().toString());
                     adapter.instantiateItem(mViewPager,measure-1);
@@ -108,6 +107,6 @@ public class Jeu extends AppCompatActivity {
                 catch(NumberFormatException e) {
                 }
             }
-        });
+        }); */
    }
 }

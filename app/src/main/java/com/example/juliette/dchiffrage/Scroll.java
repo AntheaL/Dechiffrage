@@ -21,6 +21,7 @@ public class Scroll extends Fragment {
     TranslateAnimation _translateAnimation;
     Partition p;
     Gson gson;
+    String json;
     Type type = new TypeToken<List<Partition>>() {}.getType();
     ImageView img;
 
@@ -34,14 +35,15 @@ public class Scroll extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        json = this.getArguments().getString("PARTITION");
         return inflater.inflate(R.layout.fragment_scroll, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        p = gson.fromJson(PARTITION, type);
         gson = new Gson();
+        p = gson.fromJson(json, type);
         img = view.findViewById(R.id.img);
         img.setImageBitmap(p.getResult());
 

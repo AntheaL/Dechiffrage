@@ -16,32 +16,32 @@ import java.util.List;
 
 
 public class Swipe extends Fragment implements View.OnTouchListener {
-    private static String PARTITION = "PARTITION";
     ViewPager mViewPager;
     MyAdapter adapter;
     Partition p;
     Gson gson;
+    String json;
     Type type = new TypeToken<List<Partition>>(){}.getType();
-
 
     public static Swipe newInstance(String json) {
         Swipe fragment = new Swipe();
         Bundle args = new Bundle();
         fragment.setArguments(args);
-        args.putString(PARTITION,json);
+        args.putString("PARTITION",json);
         return fragment;
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        json = this.getArguments().getString("PARTITION");
         return inflater.inflate(R.layout.fragment_swipe, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        p = gson.fromJson(PARTITION, type);
+        p = gson.fromJson(json, type);
         adapter = new MyAdapter(view.getContext(), p);
         mViewPager = view.findViewById(R.id.pager);
         mViewPager.setAdapter(adapter);
