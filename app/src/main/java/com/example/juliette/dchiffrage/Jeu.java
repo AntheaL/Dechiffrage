@@ -53,7 +53,7 @@ public class Jeu extends AppCompatActivity {
         partitions = gson.fromJson(json, type);
         int k = Integer.parseInt(intent.getStringExtra("Partition"));
         p = partitions.get(k);
-        
+
         // json = intent.getStringExtra("Partition");
         // p = gson.fromJson(json,type);
         adapter = new MyAdapter(this, p);
@@ -109,4 +109,5 @@ public class Jeu extends AppCompatActivity {
             }
         }); */
    }
+
 }

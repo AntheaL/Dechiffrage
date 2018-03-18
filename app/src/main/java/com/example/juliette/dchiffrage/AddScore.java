@@ -126,14 +126,16 @@ public class AddScore extends AppCompatActivity {
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
+                // Bitmap test = detect(btm);
                 Mat lines = detect2(btm);
                 ArrayList<Double> P =  search(lines); // cherche les coordonnées verticales des portées
                 portee = P.get(1)-P.get(0);
                 blanc = P.get(2)-P.get(1);
                 ArrayList<Rect> rectangles = new ArrayList<>(); // un Rect = une ligne entière
-                for(int i = 0; i<L.size(); i+=2) {
+                /* for(int i = 0; i<L.size(); i+=2) {
                     rectangles.add(new Rect(0, (int)(P.get(i)-blanc/2), btm.getWidth(),(int)(P.get(i)+blanc/2))); // left, top, right, bottom
-                }
+                }*/
+                rectangles.add(new Rect(0,0,btm.getWidth(),btm.getHeight()));
                 L.add(new Page(targetUri.getPath(),rectangles));
 
                 // Bitmap result  = detect(btm);
@@ -164,6 +166,8 @@ public class AddScore extends AppCompatActivity {
         Mat bwsrc = new Mat();
         cvtColor(src, bwsrc, COLOR_BGR2GRAY);
         Canny(bwsrc, dst, 100, 700, 3);
+        // threshold(bwsrc,dst,200,255,THRESH_BINARY);
+        // Sobel(bwsrc, dst,bwsrc.depth(), 0, 1);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
         Mat lines = new Mat();
         Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 300, 20);
@@ -203,7 +207,7 @@ public class AddScore extends AppCompatActivity {
         return lines;
     }
 
-        public static ArrayList<Double> search(Mat lines) {
+    public static ArrayList<Double> search(Mat lines) {
         ArrayList<Double> pos = new ArrayList<>();
         for(int x=0; x<lines.rows(); x++) {
             pos.add(lines.get(x,0)[1]);

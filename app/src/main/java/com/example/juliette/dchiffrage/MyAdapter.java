@@ -2,16 +2,12 @@ package com.example.juliette.dchiffrage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -24,7 +20,7 @@ class MyAdapter extends PagerAdapter {
     public MyAdapter(Context context, Partition p) {
         mContext = context;
         this.p = p;
-        L = p.combine();
+        L = p.combine(context);
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -50,4 +46,5 @@ class MyAdapter extends PagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((LinearLayout) object);
     }
+
 }
