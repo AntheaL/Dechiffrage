@@ -46,7 +46,7 @@ public class Partition implements Serializable {
     }
 
     public Bitmap getResult() {
-        int[] t = sizes();
+        int[] t = this.sizes();
         int position = 0;
         Bitmap result = Bitmap.createBitmap(t[0],t[1],Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(result);

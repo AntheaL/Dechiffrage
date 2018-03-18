@@ -85,7 +85,7 @@ public class Accueil extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent_2 = new Intent(Accueil.this, Jeu.class);
-                intent_2.putExtra("Partition", String.valueOf(partitions.indexOf(p)));
+            intent_2.putExtra("Partition", String.valueOf(partitions.indexOf(p)));
                 Accueil.this.startActivity(intent_2);
             }
         });

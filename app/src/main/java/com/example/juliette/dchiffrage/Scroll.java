@@ -1,5 +1,6 @@
 package com.example.juliette.dchiffrage;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,30 +23,31 @@ public class Scroll extends Fragment {
     Partition p;
     Gson gson;
     String json;
-    Type type = new TypeToken<List<Partition>>() {}.getType();
+    Type type = new TypeToken<Partition>() {}.getType();
     ImageView img;
 
     public static Scroll newInstance(String json) {
         Scroll fragment = new Scroll();
         Bundle args = new Bundle();
         fragment.setArguments(args);
-        args.putString(PARTITION, json);
+        args.putString("PARTITION", json);
         return fragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        json = this.getArguments().getString("PARTITION");
         return inflater.inflate(R.layout.fragment_scroll, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        json = this.getArguments().getString("PARTITION");
         gson = new Gson();
         p = gson.fromJson(json, type);
         img = view.findViewById(R.id.img);
-        img.setImageBitmap(p.getResult());
+        Bitmap x =p.getResult();
+        img.setImageBitmap(x);
 
     }
 
