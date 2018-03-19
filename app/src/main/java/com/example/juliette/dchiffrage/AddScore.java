@@ -144,7 +144,7 @@ public class AddScore extends AppCompatActivity {
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
-                // Bitmap test = detect(btm);
+                Bitmap test = detect(btm);
                 Mat lines = detect2(btm);
                 ArrayList<Double> P = this.search(lines); // cherche les coordonnées verticales des portées
                 portee = P.get(1) - P.get(0);
@@ -191,7 +191,7 @@ public class AddScore extends AppCompatActivity {
         // Sobel(bwsrc, dst,bwsrc.depth(), 0, 1);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 300, 20);
+        Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 250, 20);
 
         for (int x = 0; x < lines.rows(); x++)
         {
@@ -224,14 +224,16 @@ public class AddScore extends AppCompatActivity {
         Canny(bwsrc, dst, 100, 700, 3);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(dst, lines, 5, Math.PI / 180, 200, 300, 20);
+        Imgproc.HoughLinesP(dst, lines, 5, Math.PI / 180, 250, 200, 20);
         return lines;
     }
 
     public ArrayList<Double> search(Mat lines) {
         ArrayList<Double> pos = new ArrayList<>();
+        double[] l;
         for(int x=0; x<lines.rows(); x++) {
-            pos.add(lines.get(x,0)[1]);
+            l = lines.get(x,0);
+            if(Math.abs(l[2]-l[0])>Math.abs((l[3]-l[1]))) pos.add(l[1]);
         }
         sort(pos);
         ArrayList<Double> L = new ArrayList<>();

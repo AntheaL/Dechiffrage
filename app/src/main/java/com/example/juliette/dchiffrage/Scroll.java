@@ -15,7 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
 public class Scroll extends Fragment {
-    private static String PARTITION;
+    private static String PARTITION = "PARTITION";
     TranslateAnimation _translateAnimation;
     Partition p;
     Gson gson;
@@ -26,8 +26,8 @@ public class Scroll extends Fragment {
     public static Scroll newInstance(String json) {
         Scroll fragment = new Scroll();
         Bundle args = new Bundle();
+        args.putString(PARTITION, json);
         fragment.setArguments(args);
-        args.putString("PARTITION", json);
         return fragment;
     }
 
@@ -39,7 +39,7 @@ public class Scroll extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        json = this.getArguments().getString("PARTITION");
+        json = this.getArguments().getString(PARTITION);
         gson = new Gson();
         p = gson.fromJson(json, type);
         img = view.findViewById(R.id.img);

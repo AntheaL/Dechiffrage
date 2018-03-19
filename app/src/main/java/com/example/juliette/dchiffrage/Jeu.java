@@ -83,18 +83,19 @@ public class Jeu extends AppCompatActivity {
                 ft.commit();
             }
         });
-        less.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speed--;
-            }
-        });
         more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 speed++;
             }
         });
+        less.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speed--;
+            }
+        });
+
         /* go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
