@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,9 +30,13 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Collections.sort;
@@ -49,8 +55,8 @@ public class AddScore extends AppCompatActivity {
     ArrayList<Partition> partitions;
     ArrayList<Bitmap> photos;
     ArrayList<Page> L;
+    String mCurrentPhotoPath;
     Type type = new TypeToken<List<Partition>>(){}.getType();
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     double portee; // hauteur d'une portée
     double blanc; // distance entre deux portées
 
@@ -87,7 +93,7 @@ public class AddScore extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,7 +109,16 @@ public class AddScore extends AppCompatActivity {
             public void onClick(View view) {
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                    }
+                    if (photoFile != null) {
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        startActivityForResult(takePictureIntent,1);
+                    }
                 }
             }
         });
@@ -112,31 +127,34 @@ public class AddScore extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap rslt = (Bitmap) extras.get("data");
-        }
         if (resultCode == RESULT_OK) {
+            Bitmap btm = null;
             try {
-                Uri targetUri = data.getData();
+                if (requestCode == 1) {
+                    Bundle extras = data.getExtras();
+                    btm = (Bitmap) extras.get("data");
+                }
+                if (requestCode == 0) {
+                    Uri target = data.getData();
+                    mCurrentPhotoPath = target.getPath();
+                    btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(target));
+                 }
                 ImageView imageView = new ImageView(this);
                 imageView.setAdjustViewBounds(true);
-                Bitmap btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
                 // Bitmap test = detect(btm);
                 Mat lines = detect2(btm);
-                ArrayList<Double> P =  search(lines); // cherche les coordonnées verticales des portées
-                portee = P.get(1)-P.get(0);
-                blanc = P.get(2)-P.get(1);
+                ArrayList<Double> P = this.search(lines); // cherche les coordonnées verticales des portées
+                portee = P.get(1) - P.get(0);
+                blanc = P.get(2) - P.get(1);
                 ArrayList<Rect> rectangles = new ArrayList<>(); // un Rect = une ligne entière
                 /* for(int i = 0; i<L.size(); i+=2) {
                     rectangles.add(new Rect(0, (int)(P.get(i)-blanc/2), btm.getWidth(),(int)(P.get(i)+blanc/2))); // left, top, right, bottom
                 }*/
-                rectangles.add(new Rect(0,0,btm.getWidth(),btm.getHeight()));
-                L.add(new Page(targetUri.getPath(),rectangles));
+                rectangles.add(new Rect(0, 0, btm.getWidth(), btm.getHeight()));
+                L.add(new Page(new String(mCurrentPhotoPath), rectangles));
 
                 // Bitmap result  = detect(btm);
                 // ImageView linesView = new ImageView(this);
@@ -146,6 +164,9 @@ public class AddScore extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+            } catch (IndexOutOfBoundsException e) {
+                Toast errorToast = Toast.makeText(this.getApplicationContext(), "Couldn't recognize the measures", Toast.LENGTH_SHORT);
+                errorToast.show();
             }
         }
     }
@@ -207,24 +228,44 @@ public class AddScore extends AppCompatActivity {
         return lines;
     }
 
-    public static ArrayList<Double> search(Mat lines) {
+    public ArrayList<Double> search(Mat lines) {
         ArrayList<Double> pos = new ArrayList<>();
         for(int x=0; x<lines.rows(); x++) {
             pos.add(lines.get(x,0)[1]);
         }
         sort(pos);
         ArrayList<Double> L = new ArrayList<>();
-        double y = pos.get(0);
-        L.add(y);
-        double z;
-        for(int i = 0; i<pos.size(); i++) {
-            z = pos.get(i);
-            if(Math.abs(z-y)>170) {
-                L.add(pos.get(i-1)); // ajout position verticale de la ligne en bas de portée
-                L.add(z); // ajoute position verticale de la première ligne portée suivante
-                y=z;
+        try {
+            double y = pos.get(0);
+            L.add(y);
+            double z;
+            for(int i = 0; i<pos.size(); i++) {
+                z = pos.get(i);
+                if (Math.abs(z - y) > 170) {
+                    L.add(pos.get(i - 1)); // ajout position verticale de la ligne en bas de portée
+                    L.add(z); // ajoute position verticale de la première ligne portée suivante
+                    y = z;
+                }
             }
         }
+        catch(IndexOutOfBoundsException e) {
+            Toast errorToast = Toast.makeText(this.getApplicationContext(), "Couldn't recognize the measures", Toast.LENGTH_SHORT);
+            errorToast.show();
+        }
         return L;
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
     }
 }
