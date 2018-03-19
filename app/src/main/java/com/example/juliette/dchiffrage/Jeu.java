@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -32,9 +31,10 @@ public class Jeu extends AppCompatActivity {
     String json;
     FragmentTransaction ft;
     Scroll scroll;
+    ArrayList<Partition> partitions:
 
-    ViewPager mViewPager; // Attributs sensés être dans Swipe
-    MyAdapter adapter;
+    //ViewPager mViewPager; // Attributs sensés être dans Swipe
+    //MyAdapter adapter;
 
     SharedPreferences prefs;
 
@@ -45,8 +45,8 @@ public class Jeu extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_jeu);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
+        partitions = new ArrayList<>();
 
-        ArrayList<Partition> partitions = new ArrayList<>();
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         gson = new Gson();
         json = prefs.getString("ListPartitions", "");
@@ -56,15 +56,16 @@ public class Jeu extends AppCompatActivity {
 
         // json = intent.getStringExtra("Partition");
         // p = gson.fromJson(json,type);
-        adapter = new MyAdapter(this, p);
+
+        /* adapter = new MyAdapter(this, p);
         mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(adapter);
 
-        measure = mViewPager.getCurrentItem() +1 ;
+        measure = mViewPager.getCurrentItem() +1 ; */
         ft  = getSupportFragmentManager().beginTransaction();
 
         scroll = Scroll.newInstance(gson.toJson(p));
-        ft.replace(R.id.placeholder, scroll);
+        ft.add(R.id.placeholder, scroll);
         ft.commit();
 
 
