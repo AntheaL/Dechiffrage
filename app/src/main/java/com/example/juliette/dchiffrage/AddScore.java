@@ -1,6 +1,5 @@
 package com.example.juliette.dchiffrage;
 
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -28,8 +27,6 @@ import com.google.gson.reflect.TypeToken;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -62,8 +59,9 @@ public class AddScore extends AppCompatActivity {
     Uri target;
     String mCurrentPhotoPath;
     Type type = new TypeToken<List<Partition>>(){}.getType();
-    double portee; // hauteur d'une portée
-    double blanc; // distance entre deux portées
+    int distance;// motié de la hauteur d'une portée une fois isolée
+    int min_x; // extrémité gauche de la portée
+    int max_x; // extrémité droite de la portée
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +83,7 @@ public class AddScore extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Partition p = new Partition(name.getText().toString(), L);
+                Partition p = new Partition(name.getText().toString(),L,distance*2);
                 partitions.add(p);
                 json = gson.toJson(partitions);
                 prefsEditor.putString("ListPartitions",json);
@@ -171,13 +169,14 @@ public class AddScore extends AppCompatActivity {
 //                Bitmap tst = detect(btm);
                 Mat lines = detect2(btm);
                 ArrayList<Double> P = this.search(lines); // cherche les coordonnées verticales des portées
-                portee = P.get(1) - P.get(0);
-                blanc = P.get(2) - P.get(1);
-                ArrayList<Rect> rectangles = new ArrayList<>(); // un Rect = une ligne entière
-                /* for(int i = 0; i<L.size(); i+=2) {
-                    rectangles.add(new Rect(0, (int)(P.get(i)-blanc/2), btm.getWidth(),(int)(P.get(i)+blanc/2))); // left, top, right, bottom
-                }*/
-                rectangles.add(new Rect(0, 0, btm.getWidth(), btm.getHeight()));
+                double portee = P.get(1) - P.get(0);
+                double blanc = P.get(2) - P.get(1);
+                distance = (int) (portee+blanc)/2;
+                ArrayList<Rect> rectangles = new ArrayList<>();// un Rect = une ligne entière
+                for(int i = 0; i<P.size(); i+=2) {
+                    rectangles.add(new Rect(min_x, (int)(P.get(i)-distance), max_x,(int)(P.get(i)+distance))); // left, top, right, bottom
+                }
+                // rectangles.add(new Rect(0, 0, btm.getWidth(), btm.getHeight()));
                 L.add(new Page(new String(mCurrentPhotoPath), rectangles));
 
                 // Bitmap result  = detect(btm);
@@ -202,7 +201,7 @@ public class AddScore extends AppCompatActivity {
         prefsEditor.commit();
     }
 
-    public static Bitmap detect(Bitmap bitmap) {
+    public static Bitmap detect(Bitmap bitmap) { // dessine les lignes sur l'image d'origine
         OpenCVLoader.initDebug();
         Mat src = new Mat();
         Utils.bitmapToMat(bitmap,src);
@@ -257,7 +256,11 @@ public class AddScore extends AppCompatActivity {
         double[] l;
         for(int x=0; x<lines.rows(); x++) {
             l = lines.get(x,0);
-            if(Math.abs(l[2]-l[0])>Math.abs((l[3]-l[1]))) pos.add(l[1]);
+            if(Math.abs(l[2]-l[0])>Math.abs((l[3]-l[1]))) {
+                min_x = Math.min(min_x, (int) l[0]);
+                max_x = Math.max(max_x, (int) l[2]);
+                pos.add(l[1]);
+            }
         }
         sort(pos);
         ArrayList<Double> L = new ArrayList<>();
