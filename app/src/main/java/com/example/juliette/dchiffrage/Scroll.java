@@ -33,7 +33,8 @@ public class Scroll extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_scroll, container, false);
+        View view = inflater.inflate(R.layout.fragment_scroll, container, false);
+        return view;
     }
 
     @Override
@@ -45,7 +46,6 @@ public class Scroll extends Fragment {
         img = view.findViewById(R.id.img);
         Bitmap x =p.getResult(getContext());
         img.setImageBitmap(x);
-
     }
 
     /* public void startTranslate() {

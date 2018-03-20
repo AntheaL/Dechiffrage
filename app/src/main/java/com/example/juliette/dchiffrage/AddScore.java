@@ -1,5 +1,6 @@
 package com.example.juliette.dchiffrage;
 
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -32,7 +34,9 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +59,7 @@ public class AddScore extends AppCompatActivity {
     ArrayList<Partition> partitions;
     ArrayList<Bitmap> photos;
     ArrayList<Page> L;
+    Uri target;
     String mCurrentPhotoPath;
     Type type = new TypeToken<List<Partition>>(){}.getType();
     double portee; // hauteur d'une portée
@@ -108,21 +113,32 @@ public class AddScore extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    // Create the File where the photo should go
                     File photoFile = null;
                     try {
                         photoFile = createImageFile();
                     } catch (IOException ex) {
                         // Error occurred while creating the File
+                        ex.printStackTrace();
                     }
+                    // Continue only if the File was successfully created
                     if (photoFile != null) {
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                        startActivityForResult(takePictureIntent,1);
+                        Uri photoURI = FileProvider.getUriForFile(AddScore.this,
+                                "com.example.android.fileprovider",
+                                photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        target=photoURI;
+                        startActivityForResult(takePictureIntent, 1);
                     }
                 }
+
             }
         });
     }
+
+
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
@@ -131,20 +147,28 @@ public class AddScore extends AppCompatActivity {
             Bitmap btm = null;
             try {
                 if (requestCode == 1) {
-                    Bundle extras = data.getExtras();
-                    btm = (Bitmap) extras.get("data");
+                    btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(target));
                 }
                 if (requestCode == 0) {
-                    Uri target = data.getData();
-                    mCurrentPhotoPath = target.getPath();
+                    target = data.getData();
                     btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(target));
+                    try{
+                        File file = createImageFile();
+                        mCurrentPhotoPath=FileProvider.getUriForFile(this,
+                                "com.example.android.fileprovider", file).toString();
+                        OutputStream stream = null;
+                        stream = new FileOutputStream(file);
+                        btm.compress(Bitmap.CompressFormat.JPEG,100,stream); // Enregistre l'image comme jpeg
+                        stream.flush();
+                        stream.close();
+                    }catch (IOException e){e.printStackTrace();}
                  }
                 ImageView imageView = new ImageView(this);
                 imageView.setAdjustViewBounds(true);
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
-                Bitmap test = detect(btm);
+//                Bitmap tst = detect(btm);
                 Mat lines = detect2(btm);
                 ArrayList<Double> P = this.search(lines); // cherche les coordonnées verticales des portées
                 portee = P.get(1) - P.get(0);
@@ -186,26 +210,26 @@ public class AddScore extends AppCompatActivity {
         Mat cdst = new Mat();
         Mat bwsrc = new Mat();
         cvtColor(src, bwsrc, COLOR_BGR2GRAY);
-        Canny(bwsrc, dst, 100, 700, 3);
+        Canny(bwsrc,dst,200,800,3,false);
         // threshold(bwsrc,dst,200,255,THRESH_BINARY);
         // Sobel(bwsrc, dst,bwsrc.depth(), 0, 1);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 250, 20);
+//        Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 500, 100);
 
-        for (int x = 0; x < lines.rows(); x++)
-        {
-            double[] vec = lines.get(x,0);
-            double x1 = vec[0],
-                    y1 = vec[1],
-                    x2 = vec[2],
-                    y2 = vec[3];
-            Point start = new Point(x1, y1);
-            Point end = new Point(x2, y2);
-
-            Imgproc.line(cdst, start, end, new Scalar(255,0,0), 5);
-
-        }
+//        for (int x = 0; x < lines.rows(); x++)
+//        {
+//            double[] vec = lines.get(x,0);
+//            double x1 = vec[0],
+//                    y1 = vec[1],
+//                    x2 = vec[2],
+//                    y2 = vec[3];
+//            Point start = new Point(x1, y1);
+//            Point end = new Point(x2, y2);
+//
+//            Imgproc.line(cdst, start, end, new Scalar(255,0,0), 5);
+//
+//        }
 
         Bitmap result = Bitmap.createBitmap(cdst.cols(), cdst.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(cdst, result);
@@ -267,7 +291,6 @@ public class AddScore extends AppCompatActivity {
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
     }
 }

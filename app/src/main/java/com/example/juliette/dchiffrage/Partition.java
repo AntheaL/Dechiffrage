@@ -1,5 +1,6 @@
 package com.example.juliette.dchiffrage;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,8 +8,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.provider.MediaStore;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -41,10 +46,16 @@ public class Partition implements Serializable {
         ArrayList<Bitmap> L = new ArrayList<>();
         try {
             Bitmap btm;
+            ContentResolver solver = context.getContentResolver();st
             for (Page page : pages) {
-                btm = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(Uri.parse(page.path)));
+                Uri path = Uri.parse(page.path);
+//                InputStream str = solver.openInputStream(path);
+//                btm = BitmapFactory.decodeStream(str);
+                btm = MediaStore.Images.Media.getBitmap(    solver,path);
+//                str.close();
                 for (Rect rect : page.mesures)
-                    L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.left - rect.right, rect.top - rect.bottom));
+//                    L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.right - rect.left, rect.top - rect.bottom));
+                        L.add(btm);
             }
             return L;
         }

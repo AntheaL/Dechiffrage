@@ -31,7 +31,7 @@ public class Jeu extends AppCompatActivity {
     String json;
     FragmentTransaction ft;
     Scroll scroll;
-    ArrayList<Partition> partitions:
+    ArrayList<Partition> partitions;
 
     //ViewPager mViewPager; // Attributs sensés être dans Swipe
     //MyAdapter adapter;
