@@ -3,26 +3,24 @@ package com.example.juliette.dchiffrage;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Partition implements Serializable {
     String nom;
     ArrayList<Page> pages;
-    public Partition(String m, ArrayList<Page> L) {
+    int hauteur;
+
+    public Partition(String m, ArrayList<Page> L, int h) {
         nom = m;
         pages = L ;
+        hauteur = h;
     }
     public int nbMesures() {
         int nb = 0;
@@ -30,16 +28,16 @@ public class Partition implements Serializable {
         return nb;
     }
 
-    public int[] sizes() {
+    public int size() {
         int l = 0;
-        int max_height = 0;
+        // int max_height = 0;
         for(Page page: pages) {
             for (Rect rect : page.mesures) {
                 l += rect.right-rect.left;
-                max_height = Math.max(max_height, rect.bottom-rect.top);
+                // max_height = Math.max(max_height, rect.bottom-rect.top);
             }
         }
-        return new int[] {l, max_height};
+        return l;
     }
 
     public ArrayList<Bitmap> combine(Context context) {
@@ -51,11 +49,11 @@ public class Partition implements Serializable {
                 Uri path = Uri.parse(page.path);
 //                InputStream str = solver.openInputStream(path);
 //                btm = BitmapFactory.decodeStream(str);
-                btm = MediaStore.Images.Media.getBitmap(    solver,path);
+                btm = MediaStore.Images.Media.getBitmap(solver,path);
 //                str.close();
                 for (Rect rect : page.mesures)
-//                    L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.right - rect.left, rect.top - rect.bottom));
-                        L.add(btm);
+                   L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
+
             }
             return L;
         }
@@ -67,16 +65,15 @@ public class Partition implements Serializable {
 
 
     public Bitmap getResult(Context context) {
-        int[] t = this.sizes();
+        int l = this.size();
         int position = 0;
-        Bitmap result = Bitmap.createBitmap(t[0],t[1],Bitmap.Config.ARGB_8888);
+        Bitmap result = Bitmap.createBitmap(l,hauteur,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(result);
-        Paint paint = new Paint();
         ArrayList<Bitmap> L = combine(context);
         for(Bitmap btm : L) {
-            canvas.drawBitmap(btm,position, 0, paint);
+            canvas.drawBitmap(btm,position, 0, null);
             position += btm.getWidth();
         }
-        return result;
+        return L.get(0);
     }
 }

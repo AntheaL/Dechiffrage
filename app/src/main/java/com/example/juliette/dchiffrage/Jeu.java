@@ -80,8 +80,9 @@ public class Jeu extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ft.replace(R.id.placeholder, scroll);
-                ft.commit();
+                //ft.replace(R.id.placeholder, scroll);
+                //ft.commit();
+                scroll.startTranslate();
             }
         });
         more.setOnClickListener(new View.OnClickListener() {
