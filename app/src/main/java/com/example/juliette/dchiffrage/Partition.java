@@ -46,7 +46,7 @@ public class Partition implements Serializable {
         ArrayList<Bitmap> L = new ArrayList<>();
         try {
             Bitmap btm;
-            ContentResolver solver = context.getContentResolver();st
+            ContentResolver solver = context.getContentResolver();
             for (Page page : pages) {
                 Uri path = Uri.parse(page.path);
 //                InputStream str = solver.openInputStream(path);
