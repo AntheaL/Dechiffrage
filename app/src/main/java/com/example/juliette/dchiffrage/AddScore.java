@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -166,6 +167,7 @@ public class AddScore extends AppCompatActivity {
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
+//                btm = rotate(btm);
 //                Bitmap tst = detect(btm);
                 Mat lines = detect2(btm);
                 ArrayList<Double> P = this.search(lines); // cherche les coordonnées verticales des portées
@@ -213,7 +215,7 @@ public class AddScore extends AppCompatActivity {
         // threshold(bwsrc,dst,200,255,THRESH_BINARY);
         // Sobel(bwsrc, dst,bwsrc.depth(), 0, 1);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
-        Mat lines = new Mat();
+//        Mat lines = new Mat();
 //        Imgproc.HoughLinesP(dst, lines, 5, Math.PI/180, 200, 500, 100);
 
 //        for (int x = 0; x < lines.rows(); x++)
@@ -236,7 +238,7 @@ public class AddScore extends AppCompatActivity {
         return result;
     }
 
-    public static Mat detect2(Bitmap bitmap) {
+    public static Mat edgeDetector(Bitmap bitmap) {
         OpenCVLoader.initDebug();
         Mat src = new Mat();
         Utils.bitmapToMat(bitmap, src);
@@ -246,6 +248,11 @@ public class AddScore extends AppCompatActivity {
         cvtColor(src, bwsrc, COLOR_BGR2GRAY);
         Canny(bwsrc, dst, 100, 700, 3);
         cvtColor(dst, cdst, Imgproc.COLOR_GRAY2BGR);
+        return dst;
+    }
+
+    public static Mat detect2(Bitmap bitmap) {
+        Mat dst = edgeDetector(bitmap);
         Mat lines = new Mat();
         Imgproc.HoughLinesP(dst, lines, 5, Math.PI / 180, 250, 200, 20);
         return lines;
@@ -253,7 +260,9 @@ public class AddScore extends AppCompatActivity {
 
     public ArrayList<Double> search(Mat lines) {
         ArrayList<Double> pos = new ArrayList<>();
-        double[] l;
+        double[] l; // contient l'ordonnée des lignes horizontales
+        // ArrayList<double> X1 = new ArrayList<>(); // contient l'abcisse gauche de ces lignes
+        // ArrayList<double> X2 = new ArrayList<>(); // contient leur abcisse droite
         for(int x=0; x<lines.rows(); x++) {
             l = lines.get(x,0);
             if(Math.abs(l[2]-l[0])>Math.abs((l[3]-l[1]))) {
@@ -262,8 +271,10 @@ public class AddScore extends AppCompatActivity {
                 pos.add(l[1]);
             }
         }
+        // ArrayList<double> X_min = new ArrayList<>(); // contient la plus petit abcisse pour chaque portée
+        // ArrayList<double> X_max = new ArrayList<>(); // contient la plus grande abcisse pour chaque portée
         sort(pos);
-        ArrayList<Double> L = new ArrayList<>();
+        ArrayList<Double> L = new ArrayList<>(); // contient l'ordonnée de la ligne la plus haute de chaque portée
         try {
             double y = pos.get(0);
             L.add(y);
@@ -295,5 +306,20 @@ public class AddScore extends AppCompatActivity {
                 storageDir      /* directory */
         );
         return image;
+    }
+
+    public Bitmap rotate(Bitmap bitmap) {
+        Mat dst = edgeDetector(bitmap);
+        Mat lines = new Mat();
+        Imgproc.HoughLines(dst, lines, 5, Math.PI / 180, 200, 0,0);
+        int i = 0;
+        while(Math.abs(lines.get(0,i)[1])>30) {
+            i++;
+        }
+        double rho = lines.get(0,i)[1];
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate((float) rho);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 }

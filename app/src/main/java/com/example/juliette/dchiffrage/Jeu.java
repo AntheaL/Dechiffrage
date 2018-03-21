@@ -32,6 +32,7 @@ public class Jeu extends AppCompatActivity {
     FragmentTransaction ft;
     Scroll scroll;
     ArrayList<Partition> partitions;
+    Boolean playing;
 
     //ViewPager mViewPager; // Attributs sensés être dans Swipe
     //MyAdapter adapter;
@@ -44,8 +45,15 @@ public class Jeu extends AppCompatActivity {
         setContentView(R.layout.activity_jeu);
         Toolbar toolbar = findViewById(R.id.toolbar_jeu);
         setSupportActionBar(toolbar);
+
+        /* Agrandissement de la toolbar. Problème : ne change pas la taille des boutons.
+        ViewGroup.LayoutParams layoutParams = toolbar.getLayoutParams();
+        layoutParams.height *= 1.5;
+        toolbar.setLayoutParams(layoutParams); */
+
         Intent intent = getIntent();
         partitions = new ArrayList<>();
+        playing = false;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         gson = new Gson();
@@ -64,39 +72,52 @@ public class Jeu extends AppCompatActivity {
         measure = mViewPager.getCurrentItem() +1 ; */
         ft  = getSupportFragmentManager().beginTransaction();
 
+
         scroll = Scroll.newInstance(gson.toJson(p));
         ft.add(R.id.placeholder, scroll);
         ft.commit();
 
 
         play = findViewById(R.id.play);
+        play.setBackground(getResources().getDrawable(R.drawable.ic_play));
         less = findViewById(R.id.less);
         more = findViewById(R.id.more);
         go = findViewById(R.id.go);
         tempo = findViewById(R.id.tempo);
         mesure = findViewById(R.id.mesure);
-        tempo.setText(String.valueOf(speed));
+        tempo.setText(String.valueOf(scroll.speed));
         mesure.setHint(String.valueOf(measure));
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ft.replace(R.id.placeholder, scroll);
-                //ft.commit();
-                scroll.startTranslate();
+                if(!playing) {
+                    playing = true;
+                    play.setBackground(getResources().getDrawable(R.drawable.ic_pause));
+                    scroll.translate();
+                }
+                else {
+                    playing = false;
+                    play.setBackground(getResources().getDrawable(R.drawable.ic_play));
+                    scroll.stopTranslate();
+                }
             }
         });
         more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speed++;
+                scroll.speed+=2;
+                tempo.setText(String.valueOf(scroll.speed));
             }
         });
         less.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speed--;
+                scroll.speed-=2;
+                tempo.setText(String.valueOf(scroll.speed));
             }
         });
+
+
 
         /* go.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +132,10 @@ public class Jeu extends AppCompatActivity {
                 }
             }
         }); */
+   }
+
+   public void changeBackground() {
+       play.setBackground(getResources().getDrawable(R.drawable.ic_play));
    }
 
 }
