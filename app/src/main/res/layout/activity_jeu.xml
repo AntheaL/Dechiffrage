@@ -17,29 +17,33 @@
             android:id="@+id/play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:drawable/ic_media_play"
-            android:contentDescription="Play" />
+            android:contentDescription="Play"
+            android:layout_margin="10dp" />
 
         <ImageButton
             android:id="@+id/less"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
+            android:background="@android:drawable/arrow_down_float"
+            android:backgroundTint="?attr/colorControlActivated"
             android:contentDescription="Less"
-            app:srcCompat="@drawable/ic_remove" />
+            android:layout_margin="10dp"/>
 
         <TextView
             android:id="@+id/tempo"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:width="30dp"
+            android:height="30dp"
+            android:layout_margin="10dp"/>
 
         <ImageButton
             android:id="@+id/more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
-            android:tint="@android:color/white"
-            app:srcCompat="@drawable/ic_add" />
+            android:background="@android:drawable/arrow_up_float"
+            android:backgroundTint="?attr/colorControlActivated"
+            android:layout_margin="10dp"/>
 
         <EditText
             android:id="@+id/mesure"
@@ -50,7 +54,9 @@
             android:id="@+id/go"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:drawable/ic_menu_send" />
+            android:background="@android:drawable/ic_menu_send"
+            android:layout_margin="10dp" />
+
 
     </android.support.v7.widget.Toolbar>
 
@@ -58,6 +64,8 @@
         android:id="@+id/placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+
     </FrameLayout>
 
 </LinearLayout>

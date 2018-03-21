@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
@@ -25,6 +24,9 @@ public class Scroll extends Fragment {
     Type type = new TypeToken<Partition>() {}.getType();
     ImageView img;
     Bitmap x;
+//    ObjectAnimator animator;
+    int speed = 50;
+
 
     public static Scroll newInstance(String json) {
         Scroll fragment = new Scroll();
@@ -51,13 +53,42 @@ public class Scroll extends Fragment {
         img.setImageBitmap(x);
     }
 
-    public void startTranslate() {
-        _translateAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, -img.getWidth() , TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, 0f);
-        _translateAnimation.setDuration(8000);
-        _translateAnimation.setRepeatCount(-1);
-        _translateAnimation.setRepeatMode(Animation.RESTART);
+    public void translate() {
+        _translateAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, -img.getWidth(), TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE, 0f);
+        int duration = (int) (40 * (img.getX() + img.getWidth()) / speed);
+        _translateAnimation.setDuration(duration);
         _translateAnimation.setInterpolator(new LinearInterpolator());
+        _translateAnimation.setFillAfter(true);
+        _translateAnimation.setFillEnabled(true);
         img.startAnimation(_translateAnimation);
+    }
+    /* public void translate() {
+        animator = ObjectAnimator.ofFloat(img,"translationX", img.getX(), -img.getWidth());
+        int duration =(int)(40*(img.getX()+img.getWidth())/speed);
+        animator.setDuration(duration);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ((Jeu) getActivity()).changeBackground();
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+        animator.start();
+    } */
+
+
+    public void stopTranslate() {
+        _translateAnimation.cancel();
     }
 
 }
