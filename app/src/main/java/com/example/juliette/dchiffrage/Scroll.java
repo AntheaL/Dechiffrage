@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
@@ -22,6 +23,7 @@ public class Scroll extends Fragment {
     Gson gson;
     String json;
     Type type = new TypeToken<Partition>() {}.getType();
+    HorizontalScrollView scrollView;
     ImageView img;
     Bitmap x;
 //    ObjectAnimator animator;
@@ -48,6 +50,7 @@ public class Scroll extends Fragment {
         json = this.getArguments().getString(PARTITION);
         gson = new Gson();
         p = gson.fromJson(json, type);
+        scrollView = view.findViewById(R.id.horizontalScrollView1);
         img = view.findViewById(R.id.img);
         x =p.getResult(getContext());
         img.setImageBitmap(x);
@@ -89,6 +92,10 @@ public class Scroll extends Fragment {
 
     public void stopTranslate() {
         _translateAnimation.cancel();
+    }
+
+    public void goTo(int x) {
+        scrollView.scrollTo(x,0);
     }
 
 }
