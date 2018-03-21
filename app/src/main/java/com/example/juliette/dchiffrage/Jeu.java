@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,6 +34,8 @@ public class Jeu extends AppCompatActivity {
     Scroll scroll;
     ArrayList<Partition> partitions;
     Boolean playing;
+    ArrayList<Integer> positions;
+    double facteur; // facteur d'agrandissement horizontal de l'image une fois affichée
 
     //ViewPager mViewPager; // Attributs sensés être dans Swipe
     //MyAdapter adapter;
@@ -61,6 +64,8 @@ public class Jeu extends AppCompatActivity {
         partitions = gson.fromJson(json, type);
         int k = Integer.parseInt(intent.getStringExtra("Partition"));
         p = partitions.get(k);
+        positions = p.getPos();
+
 
         // json = intent.getStringExtra("Partition");
         // p = gson.fromJson(json,type);
@@ -76,7 +81,7 @@ public class Jeu extends AppCompatActivity {
         scroll = Scroll.newInstance(gson.toJson(p));
         ft.add(R.id.placeholder, scroll);
         ft.commit();
-
+        facteur = scroll.img.getWidth()/scroll.x.getWidth();
 
         play = findViewById(R.id.play);
         play.setBackground(getResources().getDrawable(R.drawable.ic_play));
@@ -117,7 +122,23 @@ public class Jeu extends AppCompatActivity {
             }
         });
 
-
+        go.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    measure = Integer.parseInt(mesure.getText().toString());
+                    scroll.goTo((int) (positions.get(measure-1)*facteur));
+                }
+                catch(NumberFormatException e) {
+                    Toast errorToast = Toast.makeText(getApplicationContext(), "Entrez un entier", Toast.LENGTH_SHORT);
+                    errorToast.show();
+                }
+                catch(IndexOutOfBoundsException e) {
+                    Toast errorToast = Toast.makeText(getApplicationContext(), "Numéro inexistant", Toast.LENGTH_SHORT);
+                    errorToast.show();
+                }
+            }
+        });
 
         /* go.setOnClickListener(new View.OnClickListener() {
             @Override

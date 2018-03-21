@@ -28,16 +28,16 @@ public class Partition implements Serializable {
         return nb;
     }
 
-    public int size() {
-        int l = 0;
-        // int max_height = 0;
+    public ArrayList<Integer> getPos() {
+        ArrayList<Integer> L = new ArrayList<>();
+        int pos = 0;
         for(Page page: pages) {
             for (Rect rect : page.mesures) {
-                l += rect.right-rect.left;
-                // max_height = Math.max(max_height, rect.bottom-rect.top);
+                L.add(pos);
+                pos += rect.right-rect.left;
             }
         }
-        return l;
+        return L;
     }
 
     public ArrayList<Bitmap> combine(Context context) {
@@ -65,15 +65,16 @@ public class Partition implements Serializable {
 
 
     public Bitmap getResult(Context context) {
-        int l = this.size();
+        ArrayList<Bitmap> L = combine(context);
+        int l = this.getPos().get(L.size()-1);
         int position = 0;
         Bitmap result = Bitmap.createBitmap(l,hauteur,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(result);
-        ArrayList<Bitmap> L = combine(context);
         for(Bitmap btm : L) {
             canvas.drawBitmap(btm,position, 0, null);
             position += btm.getWidth();
         }
         return result;
     }
+
 }
