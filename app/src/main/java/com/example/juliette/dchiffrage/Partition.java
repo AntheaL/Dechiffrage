@@ -74,6 +74,6 @@ public class Partition implements Serializable {
             canvas.drawBitmap(btm,position, 0, null);
             position += btm.getWidth();
         }
-        return L.get(0);
+        return result;
     }
 }

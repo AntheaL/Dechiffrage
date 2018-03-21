@@ -151,6 +151,8 @@ public class AddScore extends AppCompatActivity {
                 if (requestCode == 0) {
                     target = data.getData();
                     btm = BitmapFactory.decodeStream(getContentResolver().openInputStream(target));
+                    btm = rotate(btm);
+
                     try{
                         File file = createImageFile();
                         mCurrentPhotoPath=FileProvider.getUriForFile(this,
@@ -167,7 +169,6 @@ public class AddScore extends AppCompatActivity {
                 imageView.setImageBitmap(btm);
                 layout.addView(imageView);
                 photos.add(btm);
-//                btm = rotate(btm);
 //                Bitmap tst = detect(btm);
                 Mat lines = detect2(btm);
                 ArrayList<Double> P = this.search(lines); // cherche les coordonnées verticales des portées
@@ -311,15 +312,14 @@ public class AddScore extends AppCompatActivity {
     public Bitmap rotate(Bitmap bitmap) {
         Mat dst = edgeDetector(bitmap);
         Mat lines = new Mat();
-        Imgproc.HoughLines(dst, lines, 5, Math.PI / 180, 200, 0,0);
-        int i = 0;
-        while(Math.abs(lines.get(0,i)[1])>30) {
-            i++;
-        }
-        double rho = lines.get(0,i)[1];
+        Imgproc.HoughLines(dst, lines,5,Math.PI/180,100,0,0,Math.PI/2-0.3,Math.PI/2+0.3);
+        double rho = 0;
+        for (int i=0;i<lines.width();i++) rho += lines.get(0,i)[1];
+
+        rho/=lines.width();
 
         Matrix matrix = new Matrix();
-        matrix.postRotate((float) rho);
+        matrix.postRotate(-(((float)rho*180/(float)Math.PI)-90));
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 }
