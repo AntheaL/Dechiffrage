@@ -58,8 +58,8 @@ public class Scroll extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        float scalingFactor = 2f;
         super.onViewCreated(view, savedInstanceState);
+        float scalingFactor = 2f;
         json = this.getArguments().getString(PARTITION);
         gson = new Gson();
         p = gson.fromJson(json, type);
@@ -85,7 +85,6 @@ public class Scroll extends Fragment {
         for(int k=0;k<List.size();k++) xmax+=List.get(k).right;
         int x0=scrollView.getScrollX();
         ObjectAnimator xTranslate = ObjectAnimator.ofInt(scrollView,"scrollX",x0,xmax);
-        // Il faut calculer la vitesse
         // J'imagine il faut 4 beats par mesure. Donc connaissant le nombre de mesures n, on doit mettre 4*n battements a speed bpm, donc speed/60/1000 battements par ms
         // Donc il faut 4*60*1000*n/speed ms
         int n=(int)(xmax-x0)/(List.get(0).right-List.get(0).left); //Code approximatif a corriger

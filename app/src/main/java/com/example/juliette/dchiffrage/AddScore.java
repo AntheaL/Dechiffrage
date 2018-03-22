@@ -177,7 +177,7 @@ public class AddScore extends AppCompatActivity {
                 distance = (int) (portee+blanc)/2;
                 ArrayList<Rect> rectangles = new ArrayList<>();// un Rect = une ligne entière
                 for(int i = 0; i<P.size(); i+=2) {
-                    rectangles.add(new Rect(min_x, (int)(P.get(i)-distance), max_x,Math.min((int)(P.get(i)+distance),btm.getHeight()))); // left, top, right, bottom
+                    rectangles.add(new Rect(min_x, Math.max(0,(int)(P.get(i)-distance)), max_x,Math.min((int)(P.get(i)+distance),btm.getHeight()))); // left, top, right, bottom
                 }
                 // rectangles.add(new Rect(0, 0, btm.getWidth(), btm.getHeight()));
                 L.add(new Page(new String(mCurrentPhotoPath), rectangles));

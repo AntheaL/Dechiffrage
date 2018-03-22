@@ -47,14 +47,16 @@ public class Accueil extends AppCompatActivity {
         tl = findViewById(R.id.tableLayoutList);
         gson = new Gson();
 
-        if (prefs.contains("ListPartitions")) {
+        if (prefs.contains("ListPartitions")) { // Si la liste de parttions n'est pas vide
             json = prefs.getString("ListPartitions", "");
-            partitions = gson.fromJson(json, type);
+            partitions = gson.fromJson(json, type); // On désérialise cette liste
             for (Partition p : partitions) addRow(p);
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
         // Intent intent = getIntent();
         //if (intent != null) {
         //    String s = intent.getStringExtra(EXTRA_COMPONENT_NAME);
@@ -64,6 +66,7 @@ public class Accueil extends AppCompatActivity {
         //Toast toast = Toast.makeText(getApplicationContext(), "it works", Toast.LENGTH_LONG);
         // toast.show();
         // }
+
         FloatingActionButton fab = findViewById(R.id.home_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Jeu extends AppCompatActivity {
-    int speed = 50;
     int measure = 0;
     ImageButton play,less, more, go;
     TextView tempo;
