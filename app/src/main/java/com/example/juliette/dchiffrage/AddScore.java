@@ -161,7 +161,7 @@ public class AddScore extends AppCompatActivity {
                     btm = rotate(btm);
 
                     try {
-                        File file = createImageFile()
+                        File file = createImageFile();
                         mCurrentPhotoPath = FileProvider.getUriForFile(this,
                                 "com.example.android.fileprovider", file).toString();
                         OutputStream stream = null;

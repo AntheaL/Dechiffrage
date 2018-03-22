@@ -86,7 +86,7 @@ public class Jeu extends AppCompatActivity {
         tempo = findViewById(R.id.tempo);
         mesure = findViewById(R.id.mesure);
         tempo.setText(String.valueOf(scroll.speed));
-        mesure.setHint(String.valueOf(measure));
+        mesure.setHint(String.valueOf(portee));
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

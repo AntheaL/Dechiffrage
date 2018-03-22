@@ -24,7 +24,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_gravity="right"
-            android:background="@android:drawable/checkbox_on_background" />
+            android:layout_marginRight="16dp"
+            android:background="@drawable/ic_done_all_black_24dp" />
 
     </android.support.v7.widget.Toolbar>
 
