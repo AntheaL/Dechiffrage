@@ -5,7 +5,7 @@ import android.graphics.Rect;
 import java.util.ArrayList;
 
 public class Page {
-    String path;
+    String path; // pour accéder à l'image
     ArrayList<Rect> mesures;
 
     public Page(String path, ArrayList<Rect> mesures) {

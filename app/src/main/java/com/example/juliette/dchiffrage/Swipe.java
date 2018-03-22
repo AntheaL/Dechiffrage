@@ -15,6 +15,9 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 
+// Fragment non utilisé pour l'instant.
+// Permet de gérer les swipes une fois les mesures reconnues.
+
 public class Swipe extends Fragment implements View.OnTouchListener {
     ViewPager mViewPager;
     MyAdapter adapter;

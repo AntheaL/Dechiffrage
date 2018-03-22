@@ -5,7 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 
-import java.util.ArrayList;
+// Classe intialement utilisée afin de détecter les lignes par une transformée de Hough "manuelle".
+// Abandonnée car le traitement de l'image était trop long
 
 public class Hough {
 
@@ -106,21 +107,4 @@ public class Hough {
         image =  Bitmap.createBitmap(image, 0, 0, width, height, matrix, true);
     }
 
-
-        //  public Bitmap filter() {}
-        // filtre acc pour ne garder que les barres de mesure et de portée
-
-
-  //  public double getHeight() {
-  //      Bitmap btm = filter();
-        // renvoie la hauteur (index) d'une mesure
-  //
-  //  }
-
-
-  //  public ArrayList<int[]> cut() {
-  //      ArrayList<int[]> L = new ArrayList<>();
-  //          // renvoie la liste des mesures données par les 2 limites horizontales
-  //          // (hauteur d'image égale à  3*getHeight())
-  //  }
 }

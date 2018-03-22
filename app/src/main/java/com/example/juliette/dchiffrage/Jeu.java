@@ -21,20 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Jeu extends AppCompatActivity {
-    int measure = 0;
+    int portee = 0; // portee courante
     ImageButton play,less, more, go;
     TextView tempo;
     EditText mesure;
     Partition p;
-    Gson gson;
-    Boolean played=false;
     Type type = new TypeToken<List<Partition>>(){}.getType();
     String json;
-    FragmentTransaction ft;
+    Gson gson;
+    FragmentTransaction ft; // permet le passage d’un fragment à un autre
     Scroll scroll;
     ArrayList<Partition> partitions;
-    Boolean playing;
-    ArrayList<Integer> positions;
+    Boolean playing = false; // indique si la partition est en mode défiement ou non
+    Boolean played=false;
+    ArrayList<Integer> positions; // positions des portées dans le ScrollView
     double facteur; // facteur d'agrandissement horizontal de l'image une fois affichée
 
     //ViewPager mViewPager; // Attributs sensés être dans Swipe
@@ -56,8 +56,8 @@ public class Jeu extends AppCompatActivity {
 
         Intent intent = getIntent();
         partitions = new ArrayList<>();
-        playing = false;
 
+        // Désérialisation de la partition
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         gson = new Gson();
         json = prefs.getString("ListPartitions", "");
@@ -67,19 +67,15 @@ public class Jeu extends AppCompatActivity {
         positions = p.getPos();
 
 
-        // json = intent.getStringExtra("Partition");
-        // p = gson.fromJson(json,type);
-
-        /* adapter = new MyAdapter(this, p);
+       /* Utilisé une fois les mesures reconnues
+        adapter = new MyAdapter(this, p);
         mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(adapter);
-
         measure = mViewPager.getCurrentItem() +1 ; */
+
         ft  = getSupportFragmentManager().beginTransaction();
-
-
         scroll = Scroll.newInstance(gson.toJson(p));
-        ft.add(R.id.placeholder, scroll);
+        ft.add(R.id.placeholder, scroll); // place l fragment dans le FrameLayout dédié
         ft.commit();
 
         play = findViewById(R.id.play);
@@ -127,12 +123,13 @@ public class Jeu extends AppCompatActivity {
         });
 
 
+        // Pour se rendre à le portée dont le numéro a été préalablement indiqué dans l'EditText
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    measure = Integer.parseInt(mesure.getText().toString());
-                    scroll.goTo((int) (positions.get(measure-1)));
+                    portee = Integer.parseInt(mesure.getText().toString());
+                    scroll.goTo((int) (positions.get(portee-1)));
                 }
                 catch(NumberFormatException e) {
                     Toast errorToast = Toast.makeText(getApplicationContext(), "Entrez un entier", Toast.LENGTH_SHORT);
@@ -145,7 +142,8 @@ public class Jeu extends AppCompatActivity {
             }
         });
 
-        /* go.setOnClickListener(new View.OnClickListener() {
+        /* Utilisé pour se rendre à une mesure donnée
+        go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -159,9 +157,4 @@ public class Jeu extends AppCompatActivity {
             }
         }); */
    }
-
-   public void changeBackground() {
-       play.setBackground(getResources().getDrawable(R.drawable.ic_play));
-   }
-
 }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class Partition implements Serializable {
     String nom;
     ArrayList<Page> pages;
-    int hauteur;
+    int hauteur; // hauteur d'une portée une fois isolée
 
     public Partition(String m, ArrayList<Page> L, int h) {
         nom = m;
@@ -28,6 +28,7 @@ public class Partition implements Serializable {
         return nb;
     }
 
+    // renvoie la somme des tailles horizontales des portées
     public int size() {
         int l = 0;
         // int max_height = 0;
@@ -39,8 +40,9 @@ public class Partition implements Serializable {
         }
         return l;
     }
-    public ArrayList<Integer> getPos() {
-        ArrayList<Integer> L = new ArrayList<>();
+
+    // renvoie la "position horizontale" de chaque portée si on les concatène
+    public ArrayList<Integer> getPos() { ArrayList<Integer> L = new ArrayList<>();
         int pos = 0;
         for(Page page: pages) {
             for (Rect rect : page.mesures) {
@@ -51,6 +53,7 @@ public class Partition implements Serializable {
         return L;
     }
 
+    // Renvoie la liste des portées
     public ArrayList<Bitmap> combine(Context context) {
         ArrayList<Bitmap> L = new ArrayList<>();
         try {
@@ -75,6 +78,9 @@ public class Partition implements Serializable {
     }
 
 
+    // Rnevoie une très longue image où toutes les portées sont concaténées
+    // Trop longue, d'ailleurs. Finalement, cette méthode n'est pas utilisée.
+    // Les portées sont simplements disposées l'une derrière l'autre dans la ScrollView de la classe Scroll.
     public Bitmap getResult(Context context) {
         int l = this.size();
         int position = 0;
