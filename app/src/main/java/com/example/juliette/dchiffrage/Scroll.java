@@ -59,7 +59,7 @@ public class Scroll extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        float scalingFactor = 2f;
+        float scalingFactor = 4f;
         json = this.getArguments().getString(PARTITION);
         gson = new Gson();
         p = gson.fromJson(json, type);
@@ -68,13 +68,18 @@ public class Scroll extends Fragment {
         ArrayList<Bitmap> L=p.combine(getContext());
         for(Bitmap x:L) {
             img = new ImageView(getActivity());
+            linear.addView(img);
+            img.setImageBitmap(x);
 //            img.setScaleX(scalingFactor);
 //            img.setScaleY(scalingFactor);
-            linear.addView(img);
-//            img.getLayoutParams().height=500; // A corriger tout ca
-//            img.setScaleType(ImageView.ScaleType.CENTER_INSIDE); // Si on mets FIT_XY ou CENTER_CROP, cau augmente mais pas bien
-            img.setImageBitmap(x);
+//            linear.setScaleX(scalingFactor);
+//            linear.setScaleY(scalingFactor);
+//            scrollView.setScaleX(scalingFactor);
+//            scrollView.setScaleY(scalingFactor);
 
+//            img.getLayoutParams().height=500; // A corriger tout ca
+            img.setScaleType(ImageView.ScaleType.CENTER_INSIDE); // Les images sont correctement stretchees
+            img.setAdjustViewBounds(true);
         }
     }
 
@@ -87,8 +92,8 @@ public class Scroll extends Fragment {
         ObjectAnimator xTranslate = ObjectAnimator.ofInt(scrollView,"scrollX",x0,xmax);
         // J'imagine il faut 4 beats par mesure. Donc connaissant le nombre de mesures n, on doit mettre 4*n battements a speed bpm, donc speed/60/1000 battements par ms
         // Donc il faut 4*60*1000*n/speed ms
-        int n=(int)(xmax-x0)/(List.get(0).right-List.get(0).left); //Code approximatif a corriger
-        animators.setDuration(4*60*1000*n/speed);
+        float n=(xmax-x0)/(List.get(0).right-List.get(0).left); //Code approximatif a corriger
+        animators.setDuration(Math.round(4*60*1000*n/speed));
         xTranslate.setInterpolator(new LinearInterpolator());
         animators.play(xTranslate);
         animators.addListener(new Animator.AnimatorListener() {
@@ -112,6 +117,9 @@ public class Scroll extends Fragment {
 
             @Override
             public void onAnimationCancel(Animator arg0) {
+                int currentx=scrollView.getScrollX();
+                scrollView.scrollTo(currentx,0);
+
                 // TODO Auto-generated method stub
 
             }
@@ -145,9 +153,7 @@ public class Scroll extends Fragment {
 
 
     public void stopTranslate() {
-        int currentx=scrollView.getScrollX();
         animators.cancel();
-        scrollView.scrollTo(currentx,0);
     }
     public void resume() {
         animators.resume();
