@@ -28,6 +28,17 @@ public class Partition implements Serializable {
         return nb;
     }
 
+    public int size() {
+        int l = 0;
+        // int max_height = 0;
+        for(Page page: pages) {
+            for (Rect rect : page.mesures) {
+                l += rect.right-rect.left;
+                // max_height = Math.max(max_height, rect.bottom-rect.top);
+            }
+        }
+        return l;
+    }
     public ArrayList<Integer> getPos() {
         ArrayList<Integer> L = new ArrayList<>();
         int pos = 0;
@@ -52,7 +63,7 @@ public class Partition implements Serializable {
                 btm = MediaStore.Images.Media.getBitmap(solver,path);
 //                str.close();
                 for (Rect rect : page.mesures)
-                   L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
+                    L.add(Bitmap.createBitmap(btm, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));
 
             }
             return L;
@@ -65,16 +76,15 @@ public class Partition implements Serializable {
 
 
     public Bitmap getResult(Context context) {
-        ArrayList<Bitmap> L = combine(context);
-        int l = this.getPos().get(L.size()-1);
+        int l = this.size();
         int position = 0;
         Bitmap result = Bitmap.createBitmap(l,hauteur,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(result);
+        ArrayList<Bitmap> L = combine(context);
         for(Bitmap btm : L) {
             canvas.drawBitmap(btm,position, 0, null);
             position += btm.getWidth();
         }
         return result;
     }
-
 }

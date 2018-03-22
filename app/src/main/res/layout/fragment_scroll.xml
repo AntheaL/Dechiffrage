@@ -13,17 +13,11 @@
 
 
         <LinearLayout
+            android:id="@+id/linear"
             android:gravity="top"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" >
 
-            <ImageView
-                android:id="@+id/img"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                >
-            </ImageView>
 
         </LinearLayout>
 

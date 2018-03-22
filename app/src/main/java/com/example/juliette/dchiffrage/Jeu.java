@@ -28,6 +28,7 @@ public class Jeu extends AppCompatActivity {
     EditText mesure;
     Partition p;
     Gson gson;
+    Boolean played=false;
     Type type = new TypeToken<List<Partition>>(){}.getType();
     String json;
     FragmentTransaction ft;
@@ -81,7 +82,6 @@ public class Jeu extends AppCompatActivity {
         scroll = Scroll.newInstance(gson.toJson(p));
         ft.add(R.id.placeholder, scroll);
         ft.commit();
-        facteur = scroll.img.getWidth()/scroll.x.getWidth();
 
         play = findViewById(R.id.play);
         play.setBackground(getResources().getDrawable(R.drawable.ic_play));
@@ -95,15 +95,20 @@ public class Jeu extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!playing) {
+                if (!playing && !played) {
                     playing = true;
                     play.setBackground(getResources().getDrawable(R.drawable.ic_pause));
                     scroll.translate();
-                }
-                else {
-                    playing = false;
-                    play.setBackground(getResources().getDrawable(R.drawable.ic_play));
-                    scroll.stopTranslate();
+                } else {
+                    if (!playing && played) {
+                        playing = true;
+                        play.setBackground(getResources().getDrawable(R.drawable.ic_pause));
+                        scroll.translate();
+                    } else {
+                        playing = false;
+                        play.setBackground(getResources().getDrawable(R.drawable.ic_play));
+                        scroll.stopTranslate();
+                    }
                 }
             }
         });
@@ -122,12 +127,13 @@ public class Jeu extends AppCompatActivity {
             }
         });
 
+
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     measure = Integer.parseInt(mesure.getText().toString());
-                    scroll.goTo((int) (positions.get(measure-1)*facteur));
+                    scroll.goTo((int) (positions.get(measure-1)));
                 }
                 catch(NumberFormatException e) {
                     Toast errorToast = Toast.makeText(getApplicationContext(), "Entrez un entier", Toast.LENGTH_SHORT);

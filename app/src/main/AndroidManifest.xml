@@ -42,7 +42,11 @@
             android:label="@string/title_activity_add_partition"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-        <activity android:name=".Jeu"/>
+        <activity
+            android:name=".Jeu"
+            android:screenOrientation="sensorLandscape"
+            >
+        </activity>
 
     </application>
 
